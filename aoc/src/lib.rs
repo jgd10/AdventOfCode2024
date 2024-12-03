@@ -115,3 +115,20 @@ pub fn get_input_as_chars(input: &str) -> Vec<Vec<char>>{
     }
     data
 }
+
+#[allow(dead_code)]
+pub fn parse_collection_of_strings_to_usize(input: Vec<&str>) -> Vec<usize>{
+    input.iter().map(|x: &&str| {x.parse().unwrap()}).collect()
+}
+
+
+#[allow(dead_code)]
+pub fn parse_collection_of_strings_to_i32(input: Vec<&str>) -> Vec<i32>{
+    input.iter().map(|x: &&str| {x.parse().unwrap()}).collect()
+}
+
+
+#[allow(dead_code)]
+pub fn parse_collection_of_strings_to_i64(input: Vec<&str>) -> Vec<i64>{
+    input.iter().map(|x: &&str| {x.parse().unwrap()}).collect()
+}

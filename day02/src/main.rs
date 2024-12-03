@@ -2,7 +2,7 @@ use aoc::get_input_as_lines;
 
 
 fn parse_input() -> Vec<Vec<i32>>{
-    let lines: Vec<&str> = get_input_as_lines(include_str!("../input.txt"));
+    let lines: Vec<&str> = get_input_as_lines(include_str!("../example.txt"));
     let mut rows: Vec<Vec<i32>> = Vec::new();
     for line in lines {
         let nums: Vec<i32> = line.split(" ").map(|x|->i32{x.parse().unwrap()}).collect();
@@ -57,7 +57,7 @@ fn part1(){
 fn check_tolerance(line: Vec<i32>) -> bool {
     let mut safe: bool = false;
     for (i, _) in line.iter().enumerate() {
-        let mut new_line = line.clone();
+        let mut new_line: Vec<i32> = line.clone();
         new_line.remove(i);
         let diffs: Vec<i32> = get_line_differences(new_line.clone());
         safe = check_line_safe(diffs.clone());
@@ -74,7 +74,7 @@ fn part2(){
     let mut safe_count: i32 = 0;
     let mut safe: bool;
     for line_ in data {
-        let diffs = get_line_differences(line_.clone());
+        let diffs: Vec<i32> = get_line_differences(line_.clone());
         safe = check_line_safe(diffs.clone());
         if !safe {
             safe = check_tolerance(line_.clone());

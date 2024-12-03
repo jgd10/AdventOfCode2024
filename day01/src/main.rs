@@ -4,7 +4,7 @@ use std::convert::TryFrom;
 
 
 fn parse_input() -> (Vec<i32>, Vec<i32>){
-    let lines: Vec<&str> = get_input_as_lines(include_str!("../input.txt"));
+    let lines: Vec<&str> = get_input_as_lines(include_str!("../example.txt"));
     let mut left_nums: Vec<i32> = Vec::new();
     let mut right_nums: Vec<i32> = Vec::new();
     for line in lines {
