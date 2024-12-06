@@ -34,26 +34,6 @@ fn parse_input() -> (HashMap<Coord32, Tile>, Coord32){
     (floor_plan, guard)
 }
 
-
-fn get_new_coord(current: &Coord32, direction: Direction) -> Coord32{
-    match direction {
-        Direction::East => Coord32{x: current.x + 1, y: current.y},
-        Direction::West => Coord32{x: current.x - 1, y: current.y},
-        Direction::North => Coord32{x: current.x, y: current.y - 1},
-        Direction::South => Coord32{x: current.x, y: current.y + 1},
-    }
-}
-
-fn turn_90_right(direction: Direction) -> Direction{
-    match direction {
-        Direction::East => Direction::South,
-        Direction::West => Direction::North,
-        Direction::North => Direction::East,
-        Direction::South => Direction::West,
-    }
-}
-
-
 fn patrol_guard(floor_plan: HashMap<Coord32, Tile>, mut guard: Coord32, mut direction: Direction) -> bool{
     let mut prev_states: HashMap<(Coord32, Direction), usize> = HashMap::new();
     let min_repeats: usize = 3;
@@ -65,9 +45,9 @@ fn patrol_guard(floor_plan: HashMap<Coord32, Tile>, mut guard: Coord32, mut dire
             let value = prev_states.get(&(guard, direction)).unwrap();
             prev_states.insert((guard, direction), value + 1);
         }
-        let next_space = get_new_coord(&guard, direction);
+        let next_space = guard.get_next_coord(direction);
         match floor_plan.get(&next_space) {
-            Some(Tile::Obstacle) => direction = turn_90_right(direction),
+            Some(Tile::Obstacle) => direction = direction.turn_clockwise(),
             Some(Tile::Space) => guard = next_space,
             _ => guard = next_space,
         }
@@ -85,9 +65,9 @@ fn part1(){
     let mut direction: Direction = Direction::North;
     while floor_plan.contains_key(&guard) {
         visited_tiles.insert(guard);
-        let next_space = get_new_coord(&guard, direction);
+        let next_space = guard.get_next_coord(direction);
         match floor_plan.get(&next_space) {
-            Some(Tile::Obstacle) => direction = turn_90_right(direction),
+            Some(Tile::Obstacle) => direction = direction.turn_clockwise(),
             Some(Tile::Space) => guard = next_space,
             _ => guard = next_space,
         }
@@ -109,7 +89,7 @@ fn part2(){
     }
     while floor_plan.contains_key(&guard) {
         banned_locations.insert(guard);
-        let next_space = get_new_coord(&guard, direction);
+        let next_space = guard.get_next_coord(direction);
         if floor_plan.contains_key(&next_space) && !banned_locations.contains(&next_space){
             let mut trial_floor_plan: HashMap<Coord32, Tile> = floor_plan.clone();
             trial_floor_plan.insert(next_space, Tile::Obstacle);
@@ -122,11 +102,10 @@ fn part2(){
             // println!("You can't park there mate! {:?}", next_space);
         }
         match floor_plan.get(&next_space) {
-            Some(Tile::Obstacle) => direction = turn_90_right(direction),
+            Some(Tile::Obstacle) => direction = direction.turn_clockwise(),
             Some(Tile::Space) => guard = next_space,
             _ => guard = next_space,
         }
-
     }
     println!("Part 2 {}", new_placements.len());
 }

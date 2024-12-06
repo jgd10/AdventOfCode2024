@@ -38,11 +38,47 @@ pub enum Direction {
     West,
 }
 
+impl Direction {
+    #[allow(dead_code)]
+    pub fn turn_clockwise(self) -> Direction{
+        match self {
+            Direction::East => Direction::South,
+            Direction::West => Direction::North,
+            Direction::North => Direction::East,
+            Direction::South => Direction::West,
+        }
+    }
+    #[allow(dead_code)]
+    pub fn turn_anticlockwise(self) -> Direction{
+        match self {
+            Direction::East => Direction::North,
+            Direction::West => Direction::South,
+            Direction::North => Direction::West,
+            Direction::South => Direction::East,
+        }
+    }
+} 
+
+
+
+
 #[derive(Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord, Hash)]
 #[allow(dead_code)]
 pub struct Coord32 {
     pub x: i32,
     pub y: i32,
+}
+
+impl Coord32 {
+    #[allow(dead_code)]
+    pub fn get_next_coord(self, direction: Direction) -> Coord32 {
+        match direction {
+            Direction::East => Coord32{x: self.x + 1, y: self.y},
+            Direction::West => Coord32{x: self.x - 1, y: self.y},
+            Direction::North => Coord32{x: self.x, y: self.y - 1},
+            Direction::South => Coord32{x: self.x, y: self.y + 1},
+        }
+    }
 }
 
 
