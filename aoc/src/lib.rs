@@ -1,3 +1,27 @@
+use std::fs::File;
+use std::io::LineWriter;
+use std::io::Write;
+use std::time::Instant;
+
+
+pub fn time_function(func: &dyn Fn()){
+    let now = Instant::now();
+    func();
+    println!("{:?}", now.elapsed());
+}
+
+
+
+pub fn write_vector_to_text_file<T: std::fmt::Debug>(my_vector: Vec<T>){
+    let file = File::create("my_vector.txt").unwrap();
+    let mut file = LineWriter::new(file);
+    for coord in my_vector {
+        write!(file, "{:?}\n", coord).ok();
+    }
+    file.flush().unwrap();
+}
+
+
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
 }
