@@ -1,9 +1,14 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
+use std::hash::Hash;
+use std::cmp;
 use aoc::get_input_as_chars;
 use aoc::Direction;
 use aoc::Coord32;
 use aoc::time_function;
+use aoc::reconstruct_grid;
+use aoc::write_string_to_file;
+use aoc::InputType;
 
 
 
@@ -59,11 +64,33 @@ fn patrol_guard(floor_plan: HashMap<Coord32, Tile>, mut guard: Coord32, mut dire
 }
 
 
+fn visualise_floorplan(floor_plan: HashMap<Coord32, Tile>, guard: Coord32, direction: Direction, visited: HashSet<Coord32>, index: usize, input_type: InputType) {
+    let mut text_grid: HashMap<Coord32, &str> = HashMap::new();
+    let mut imax: i32 = 0;
+    let mut jmax: i32 = 0;
+    for (coord, tile) in floor_plan {
+        text_grid.insert(coord, match tile { Tile::Obstacle => "#", Tile::Space => "." });
+        imax = cmp::max(imax, coord.x);
+        jmax = cmp::max(jmax, coord.y);
+    }
+    for v in visited {
+        text_grid.insert(v, "o");
+    }
+    let guard_icon: &str = match direction {Direction::East => ">", Direction::North => "^", Direction::South => "v", Direction::West => "<"};
+    text_grid.insert(guard, guard_icon);
+    let string = reconstruct_grid(text_grid, imax+1, jmax+1);
+    write_string_to_file(&string, &format!("./output_{}_{:0>5}.txt", input_type, index));
+}
+
+
 fn part1(){
     let (floor_plan, mut guard) = parse_input();
     let mut visited_tiles: HashSet<Coord32> = HashSet::new();
     let mut direction: Direction = Direction::North;
+    let mut counter: usize = 0;
+    let input_type = InputType::Input;
     while floor_plan.contains_key(&guard) {
+        visualise_floorplan(floor_plan.clone(), guard, direction, visited_tiles.clone(), counter, input_type);
         visited_tiles.insert(guard);
         let next_space = guard.get_next_coord(direction);
         match floor_plan.get(&next_space) {
@@ -71,6 +98,7 @@ fn part1(){
             Some(Tile::Space) => guard = next_space,
             _ => guard = next_space,
         }
+        counter += 1;
     }
     println!("Part 1 {}", visited_tiles.len())
 }

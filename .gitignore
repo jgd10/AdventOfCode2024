@@ -23,3 +23,5 @@ Cargo.lock
 input.txt
 venv/
 *.idea
+*input*.txt
+*output*.txt

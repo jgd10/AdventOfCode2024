@@ -1,7 +1,28 @@
+use std::collections::HashMap;
 use std::fs::File;
+use std::fs::write;
 use std::io::LineWriter;
 use std::io::Write;
 use std::time::Instant;
+use std::fmt;
+
+
+pub fn reconstruct_grid(coords: HashMap<Coord32, &str>, imax: i32, jmax: i32) -> String {
+    let mut grid: Vec<Vec<&str>> = vec![vec!["."; imax as usize]; jmax as usize];
+    let mut rows: Vec<String> = Vec::new();
+    for (c, s) in coords {
+        grid[c.y as usize][c.x as usize] = s;
+    }
+    for row in grid {
+        rows.push(row.join(""));
+    }
+    rows.join("\n")
+}
+
+
+pub fn write_string_to_file(string: &str, filepath: &str) {
+    write(filepath, string).expect("Failed to write to file");
+}
 
 
 pub fn time_function(func: &dyn Fn()){
@@ -26,6 +47,27 @@ pub fn write_vector_to_text_file<T: std::fmt::Debug>(my_vector: Vec<T>){
 pub enum InputType {
     Input,
     Example,
+    Example1,
+    Example2,
+    Test,
+    Test1,
+    Test2,
+    Test3,
+}
+
+impl fmt::Display for InputType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            InputType::Input => write!(f, "input"),
+            InputType::Example => write!(f, "example"),
+            InputType::Example1 => write!(f, "example1"),
+            InputType::Example2 => write!(f, "exampl2"),
+            InputType::Test => write!(f, "test"),
+            InputType::Test1 => write!(f, "test1"),
+            InputType::Test2 => write!(f, "test2"),
+            InputType::Test3 => write!(f, "test3"),
+        }
+    }
 }
 
 
