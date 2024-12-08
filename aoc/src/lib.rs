@@ -24,7 +24,6 @@ pub fn write_string_to_file(string: &str, filepath: &str) {
     write(filepath, string).expect("Failed to write to file");
 }
 
-
 pub fn time_function(func: &dyn Fn()){
     let now = Instant::now();
     func();
