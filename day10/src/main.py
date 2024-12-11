@@ -68,10 +68,10 @@ class HikingMap:
     _points: dict[Point, Tile] = None
 
     @property
-    def points(self):
+    def points(self) -> dict[Point, Tile]:
         if self._points is None:
             self._points = {t.point: t for t in self.tiles}
-        return
+        return self._points
 
     def find_shortest_paths(self, start_height: str, end_height: str):
         starting_tiles = {t for t in self.tiles if t.height == start_height}
@@ -114,19 +114,49 @@ class HikingMap:
                 trails = [trail + [neighbor] if trail[-1] == v else trail for neighbor in neighbors for trail in trails]
         return end_points, trails
 
-    def get_trailhead_ratings(self):
+    def get_trailhead_ratings(self, plot: bool = False):
         starting_tiles = {t for t in self.tiles if t.height == '0'}
         # starting_tiles = {Tile(Point(x=1, y=7), '0')}
         total = 0
+        all_trails = []
         for tile in starting_tiles:
             end_points, trails = self.bfs2(tile, '9')
-            trails = [set(t) for t in trails]
+            trails = [t for t in trails]
             unique_ = []
             for trail in trails:
                 if trail not in unique_ and any([t.height=='9' for t in trail]):
                     unique_.append(trail)
             total += len(unique_)
+            all_trails.extend(unique_)
+        if plot:
+            self.make_plots(all_trails)
         return total
+
+    def make_plots(self, trails: list[list[Tile]]):
+        counter = 0
+        for trail in trails:
+            marked_points = set()
+            for tile in trail:
+                marked_points.add(tile.point)
+                self.output_input_map(marked_points, counter)
+                counter += 1
+
+    def output_input_map(self, marked_points: set[Point], id_: int) -> None:
+        xmax = max({t.point.x for t in self.tiles})
+        ymax = max({t.point.y for t in self.tiles})
+        data = [['.' for __ in range(xmax)] for _ in range(ymax)]
+        for i in range(xmax):
+            for j in range(ymax):
+                p = Point(i, j)
+                tile = self.points[p]
+                if p in marked_points:
+                    data[j][i] = '#'
+                else:
+                    data[j][i] = tile.height
+        rows = [''.join(row) for row in data]
+        string = '\n'.join(rows)
+        with open(f'../visualisation/output_part2_{id_:05}.txt', 'w', encoding='utf-8') as f:
+            f.write(string)
 
 
 
@@ -161,7 +191,7 @@ def part1():
 
 def part2():
     hiking_map = parse(InputType.INPUT)
-    print(f'Part 2: {hiking_map.get_trailhead_ratings()}')
+    print(f'Part 2: {hiking_map.get_trailhead_ratings(plot=True)}')
 
 
 def main():
