@@ -26,3 +26,10 @@ venv/
 *input*.txt
 *output*.txt
 _*.py
+step.txt
+output/
+output_results/
+test
+*.mp4
+*.avi
+*.asf
