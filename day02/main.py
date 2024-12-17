@@ -16,7 +16,7 @@ def part1():
         for n in line:
             diffs.append(n-prev)
             prev = n
-        if (all([n < 0 for n in diffs]) or all([n > 0 for n in diffs])):
+        if all([n < 0 for n in diffs]) or all([n > 0 for n in diffs]):
             pass
         else:
             safe = False
@@ -26,7 +26,6 @@ def part1():
             pass
         else:
             safe = False
-        
         if safe:
             counter += 1
     print(f'Part 1: {counter}')
@@ -42,7 +41,7 @@ def get_diffs(line):
 
 def check_diffs(diffs):
     safe = True
-    if (all([n < 0 for n in diffs]) or all([n > 0 for n in diffs])):
+    if all([n < 0 for n in diffs]) or all([n > 0 for n in diffs]):
         pass
     else:
         safe = False

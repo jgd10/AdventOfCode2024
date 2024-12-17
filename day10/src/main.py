@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from enum import Enum, unique
-from unittest import case
+from enum import Enum
 
 height_map = {'0': '1',
               '1': '2',
