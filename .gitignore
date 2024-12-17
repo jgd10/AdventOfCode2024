@@ -33,3 +33,5 @@ test
 *.mp4
 *.avi
 *.asf
+*.pyc
+__pycache__/
