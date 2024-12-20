@@ -84,6 +84,13 @@ class Point:
     x: int
     y: int
 
+    def diff(self, other: 'Point'):
+        return Point(self.x - other.x, self.y - other.y)
+
+    @property
+    def length(self):
+        return abs(self.x) + abs(self.y)
+
     def point_in_direction(self, direction: Direction) -> 'Point':
         match direction:
             case Direction.N:
