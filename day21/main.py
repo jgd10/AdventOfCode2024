@@ -1,16 +1,77 @@
 from aoc import parse_file, Point, timer, TimeUnit, InputType, Direction
 from dataclasses import dataclass
-from itertools import permutations
-import functools
+
+
+NUMPAD_ROUTES = {
+    'A9': '^^^A',
+    '96': 'vA',
+    '65': '<A',
+    '5A': 'vv>A',
+    'A1': '^<<A',
+    '14': '^A',
+    '43': 'v>>A',
+    '3A': 'vA',
+    'A5': '<^^A',
+    '52': 'vA',
+    '28': '^^A',
+    '8A': 'vvv>A',
+    'A6': '^^A',
+    '67': '<<^A',
+    '70': '>vvvA',
+    '0A': '>A',
+    '97': '<<A',
+    '73': 'vv>>A',
+    'A0': '<A',
+    '02': '^A',
+    '29': '^^>A',
+    '9A': 'vvvA',
+    '98': '<A',
+    '80': 'vvvA',
+    '17': '^^A',
+    '79': '>>A',
+    'A4': '^^<<A',
+    '45': '>A',
+    '56': '>A',
+    '6A': 'vvA',
+    'A3': '^A',
+    '37': '<<^^A',
+}
+
+DPAD_ROUTES = {
+    'Av': '<vA',
+    'A>': 'vA',
+    'A<': 'v<<A',
+    'A^': '<A',
+    '^^': 'A',
+    'vv': 'A',
+    '>>': 'A',
+    '<<': 'A',
+    'AA': 'A',
+    '>v': '<A',
+    '>A': '^A',
+    '>^': '<^A',
+    '><': '<<A',
+    'v^': '^A',
+    'v<': '<A',
+    'v>': '>A',
+    'vA': '^>A',
+    '^A': '>A',
+    '^>': 'v>A',
+    '^v': 'vA',
+    '^<': 'v<A',
+    '<^': '>^A',
+    '<v': '>A',
+    '<>': '>>A',
+    '<A': '>>^A',
+}
 
 
 @dataclass
 class KeyPad:
     keys: dict[Point, str]
-    _fastest_paths: dict[tuple[Point, Point], str] = None
-    _fastest_paths_by_key: dict[tuple[str, str], str] = None
     _current_point: Point = None
     _points: dict[str, Point] = None
+    is_robot: bool = True
 
     def reset(self):
         self._current_point = self.points['A']
@@ -47,119 +108,14 @@ class KeyPad:
                 if c == '.':
                     continue
                 keys[p] = c
-        return cls(keys)
+        return cls(keys, is_robot=robot)
 
     def get_fastest_path(self, points: tuple[Point, Point]):
-        if points[0] == points[1]:
-            return ''
-        start, end = points
-        diff = end.diff(start)
-        if diff.x < 0:
-            x_commands = '<'*abs(diff.x)
-        elif diff.x > 0:
-            x_commands = '>'*diff.x
+        route = self.keys[points[0]] + self.keys[points[1]]
+        if self.is_robot:
+            return DPAD_ROUTES[route]
         else:
-            x_commands = ''
-        if diff.y < 0:
-            y_commands = '^'*abs(diff.y)
-        elif diff.y > 0:
-            y_commands = 'v'*diff.y
-        else:
-            y_commands = ''
-        if Point(points[0].x + diff.x, points[0].y) not in self.keys:
-            return y_commands + x_commands
-        if Point(points[0].x, points[0].y + diff.y) not in self.keys:
-            return x_commands + y_commands
-        return x_commands + y_commands
-
-    def is_valid_command(self, command: str, start, end) -> bool:
-        point = start
-        if command[-1] != 'A':
-            return False
-        for cmd in command:
-            match cmd:
-                case '>':
-                    point = point.point_in_direction(Direction.E)
-                case '^':
-                    point = point.point_in_direction(Direction.N)
-                case 'v':
-                    point = point.point_in_direction(Direction.S)
-                case '<':
-                    point = point.point_in_direction(Direction.W)
-                case 'A':
-                    continue
-                case _:
-                    raise ValueError
-            if point not in self.keys:
-                return False
-        if point != end:
-            return False
-        return True
-
-    def optimise(self, upper_keypads: 'list[KeyPad]'):
-        self.get_fastest_paths()
-        new_fastest_paths = {}
-
-        for points, commands in self.fastest_paths.items():
-            optimal_commands = commands
-            if len(set(commands)) != 2:
-                new_fastest_paths[points] = optimal_commands
-                continue
-            shortest_command_length = 9999999
-            for cmds in permutations(commands):
-                string_command = ''.join(cmds) + 'A'
-                if self.is_valid_command(string_command, *points):
-                    top_command = self.get_upper_commands(
-                        string_command, upper_keypads
-                    )
-                if len(top_command) < shortest_command_length:
-                    shortest_command_length = len(top_command)
-                    optimal_commands = ''.join(cmds)
-            new_fastest_paths[points] = optimal_commands
-
-        self._fastest_paths = new_fastest_paths
-        self._fastest_paths_by_key = {(self.keys[p[0]], self.keys[p[
-            0]]): path for p, path in self._fastest_paths.items()}
-
-    @staticmethod
-    def get_upper_commands(string_command, upper_keypads):
-        next_keys = []
-        upper_pads = upper_keypads[:]
-        while upper_pads:
-            upper_keypad = upper_pads.pop()
-            for cmd in string_command:
-                start = upper_keypad.current_point
-                end = upper_keypad.points[cmd]
-                pad_commands = upper_keypad.fastest_paths[(start, end)]
-                next_keys.append(pad_commands + 'A')
-                upper_keypad.current_point = end
-            string_command = ''.join(next_keys)
-        return string_command
-
-    def get_fastest_paths(self):
-        self._fastest_paths = {}
-        for point1 in self.keys:
-            for point2 in self.keys:
-                points = (point1, point2)
-                self._fastest_paths[points] = self.get_fastest_path(points)
-
-    @property
-    def fastest_paths(self):
-        if self._fastest_paths is None:
-            self._fastest_paths = {}
-            self.get_fastest_paths()
-            self._fastest_paths_by_key = {(self.keys[p[0]], self.keys[p[
-                0]]): path for p, path in self._fastest_paths.items()}
-        return self._fastest_paths
-
-    @property
-    def fastest_paths_by_key(self):
-        if self._fastest_paths_by_key is None:
-            self._fastest_paths = {}
-            self.get_fastest_paths()
-            self._fastest_paths_by_key = {(self.keys[p[0]], self.keys[p[
-                0]]): path for p, path in self._fastest_paths.items()}
-        return self._fastest_paths_by_key
+            return NUMPAD_ROUTES[route]
 
 
 
@@ -167,25 +123,37 @@ class KeyPad:
 class KeyPadStack:
     key_pads: list[KeyPad]
 
+    def reset(self):
+        for pad in self.key_pads:
+            pad.current_point = pad.points['A']
+
     def get_commands_to_press(self, keys: str):
         key_pads = self.key_pads[:]
         while key_pads:
             current_pad = key_pads.pop()
-            current_pad.optimise(key_pads)
-            current_pad.reset()
-            for pad in key_pads:
-                pad.reset()
+            current_pad.current_point = current_pad.points['A']
             next_keys = []
             for cmd in keys:
                 start = current_pad.current_point
                 end = current_pad.points[cmd]
-                pad_commands = current_pad.fastest_paths[(start, end)]
-                next_keys.append(pad_commands+'A')
+                pad_commands = current_pad.get_fastest_path((start, end))
+                next_keys.append(pad_commands)
                 current_pad.current_point = end
             keys = ''.join(next_keys)
         return keys
 
 
+def get_move_counts_n_robots_above(stack: KeyPadStack):
+    moves = {v for v in DPAD_ROUTES.values()}
+    move_counts = {}
+    for move in moves: # DPAD_ROUTES:
+        stack.reset()
+        commands = stack.get_commands_to_press(move)
+        move_counts[move] = len(commands)
+    return move_counts
+
+
+@timer(TimeUnit.ms)
 def part1(input_type: InputType):
     key_presses = parse_file(input_type)
     robot_keypads = [KeyPad.from_text_file(robot=True) for _ in range(2)]
@@ -196,21 +164,24 @@ def part1(input_type: InputType):
         commands = kps.get_commands_to_press(code_press)
         number = int(code_press.replace('A', ''))
         total += len(commands) * number
-        print(code_press, len(commands), number, commands)
     print(f'Part 1: {total}')
 
 
+@timer(TimeUnit.s)
 def part2(input_type: InputType):
     key_presses = parse_file(input_type)
-    robot_keypads = [KeyPad.from_text_file(robot=True) for _ in range(25)]
+    robot_keypads = [KeyPad.from_text_file(robot=True) for _ in range(12)]
+    robot_keypads2 = [KeyPad.from_text_file(robot=True) for _ in range(13)]
     door_keypad = KeyPad.from_text_file(robot=False)
     kps = KeyPadStack([*robot_keypads, door_keypad])
     total = 0
+    move_counts = get_move_counts_n_robots_above(KeyPadStack(robot_keypads2))
     for code_press in key_presses:
         commands = kps.get_commands_to_press(code_press)
+        num_commands = sum([move_counts[c+'A'] for c in
+                           commands.split('A')]) - 1
         number = int(code_press.replace('A', ''))
-        total += len(commands) * number
-        print(code_press, len(commands), number, commands)
+        total += num_commands * number
     print(f'Part 2: {total}')
 
 

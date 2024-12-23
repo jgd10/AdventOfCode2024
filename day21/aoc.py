@@ -6,6 +6,18 @@ from functools import wraps
 from time import time
 
 
+def chunk_list(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
+def chunk_pairs(lst):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst)-1, 1):
+        yield lst[i:i + 2]
+
+
 class TimeUnit(Enum):
     s = 1
     ms = 2
