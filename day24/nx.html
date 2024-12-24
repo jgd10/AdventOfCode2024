@@ -1,0 +1,1090 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+                <link href="lib/tom-select/tom-select.css" rel="stylesheet">
+                <script src="lib/tom-select/tom-select.complete.min.js"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 2000px;
+                 height: 1000px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 2000px;
+                 height: 1000px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+             #config {
+                 float: left;
+                 width: 400px;
+                 height: 600px;
+             }
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+                <div id="select-menu" class="card-header">
+                    <div class="row no-gutters">
+                        <div class="col-10 pb-2">
+                            <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            onchange="selectNode([value]);"
+                            id="select-node"
+                            placeholder="Select node..."
+                            >
+                                <option selected>Select a Node by ID</option>
+                                
+                                    <option value="x14">x14</option>
+                                
+                                    <option value="cwj">cwj</option>
+                                
+                                    <option value="khg">khg</option>
+                                
+                                    <option value="y14">y14</option>
+                                
+                                    <option value="sth">sth</option>
+                                
+                                    <option value="dhf">dhf</option>
+                                
+                                    <option value="gcs">gcs</option>
+                                
+                                    <option value="nsg">nsg</option>
+                                
+                                    <option value="kkt">kkt</option>
+                                
+                                    <option value="hrr">hrr</option>
+                                
+                                    <option value="x04">x04</option>
+                                
+                                    <option value="y04">y04</option>
+                                
+                                    <option value="z05">z05</option>
+                                
+                                    <option value="fdd">fdd</option>
+                                
+                                    <option value="y44">y44</option>
+                                
+                                    <option value="pfh">pfh</option>
+                                
+                                    <option value="kbb">kbb</option>
+                                
+                                    <option value="x44">x44</option>
+                                
+                                    <option value="khw">khw</option>
+                                
+                                    <option value="z44">z44</option>
+                                
+                                    <option value="fqq">fqq</option>
+                                
+                                    <option value="bpg">bpg</option>
+                                
+                                    <option value="csk">csk</option>
+                                
+                                    <option value="pss">pss</option>
+                                
+                                    <option value="hww">hww</option>
+                                
+                                    <option value="x09">x09</option>
+                                
+                                    <option value="y09">y09</option>
+                                
+                                    <option value="z10">z10</option>
+                                
+                                    <option value="jgd">jgd</option>
+                                
+                                    <option value="wmd">wmd</option>
+                                
+                                    <option value="jts">jts</option>
+                                
+                                    <option value="y16">y16</option>
+                                
+                                    <option value="x16">x16</option>
+                                
+                                    <option value="kvv">kvv</option>
+                                
+                                    <option value="tds">tds</option>
+                                
+                                    <option value="mqr">mqr</option>
+                                
+                                    <option value="swm">swm</option>
+                                
+                                    <option value="z17">z17</option>
+                                
+                                    <option value="nfn">nfn</option>
+                                
+                                    <option value="z14">z14</option>
+                                
+                                    <option value="hdd">hdd</option>
+                                
+                                    <option value="tsh">tsh</option>
+                                
+                                    <option value="fhs">fhs</option>
+                                
+                                    <option value="y35">y35</option>
+                                
+                                    <option value="rpk">rpk</option>
+                                
+                                    <option value="nbb">nbb</option>
+                                
+                                    <option value="x35">x35</option>
+                                
+                                    <option value="fkk">fkk</option>
+                                
+                                    <option value="z35">z35</option>
+                                
+                                    <option value="bhw">bhw</option>
+                                
+                                    <option value="htp">htp</option>
+                                
+                                    <option value="z15">z15</option>
+                                
+                                    <option value="y15">y15</option>
+                                
+                                    <option value="x15">x15</option>
+                                
+                                    <option value="x13">x13</option>
+                                
+                                    <option value="gnf">gnf</option>
+                                
+                                    <option value="y13">y13</option>
+                                
+                                    <option value="z13">z13</option>
+                                
+                                    <option value="y39">y39</option>
+                                
+                                    <option value="qwn">qwn</option>
+                                
+                                    <option value="htw">htw</option>
+                                
+                                    <option value="x39">x39</option>
+                                
+                                    <option value="phm">phm</option>
+                                
+                                    <option value="nhr">nhr</option>
+                                
+                                    <option value="z19">z19</option>
+                                
+                                    <option value="x19">x19</option>
+                                
+                                    <option value="y19">y19</option>
+                                
+                                    <option value="hcq">hcq</option>
+                                
+                                    <option value="wks">wks</option>
+                                
+                                    <option value="gfq">gfq</option>
+                                
+                                    <option value="twv">twv</option>
+                                
+                                    <option value="x40">x40</option>
+                                
+                                    <option value="mpd">mpd</option>
+                                
+                                    <option value="bjw">bjw</option>
+                                
+                                    <option value="y40">y40</option>
+                                
+                                    <option value="fcd">fcd</option>
+                                
+                                    <option value="pvw">pvw</option>
+                                
+                                    <option value="hsf">hsf</option>
+                                
+                                    <option value="gqr">gqr</option>
+                                
+                                    <option value="mdb">mdb</option>
+                                
+                                    <option value="z12">z12</option>
+                                
+                                    <option value="fsf">fsf</option>
+                                
+                                    <option value="y12">y12</option>
+                                
+                                    <option value="x12">x12</option>
+                                
+                                    <option value="sfw">sfw</option>
+                                
+                                    <option value="y29">y29</option>
+                                
+                                    <option value="sbk">sbk</option>
+                                
+                                    <option value="nrv">nrv</option>
+                                
+                                    <option value="x29">x29</option>
+                                
+                                    <option value="vnp">vnp</option>
+                                
+                                    <option value="kqk">kqk</option>
+                                
+                                    <option value="gjs">gjs</option>
+                                
+                                    <option value="x22">x22</option>
+                                
+                                    <option value="y22">y22</option>
+                                
+                                    <option value="shk">shk</option>
+                                
+                                    <option value="vjk">vjk</option>
+                                
+                                    <option value="kqs">kqs</option>
+                                
+                                    <option value="z23">z23</option>
+                                
+                                    <option value="hkg">hkg</option>
+                                
+                                    <option value="fww">fww</option>
+                                
+                                    <option value="hhm">hhm</option>
+                                
+                                    <option value="rrk">rrk</option>
+                                
+                                    <option value="x17">x17</option>
+                                
+                                    <option value="y17">y17</option>
+                                
+                                    <option value="z18">z18</option>
+                                
+                                    <option value="x30">x30</option>
+                                
+                                    <option value="bpn">bpn</option>
+                                
+                                    <option value="bjs">bjs</option>
+                                
+                                    <option value="y30">y30</option>
+                                
+                                    <option value="cwn">cwn</option>
+                                
+                                    <option value="mts">mts</option>
+                                
+                                    <option value="z02">z02</option>
+                                
+                                    <option value="jgj">jgj</option>
+                                
+                                    <option value="x02">x02</option>
+                                
+                                    <option value="y02">y02</option>
+                                
+                                    <option value="ntr">ntr</option>
+                                
+                                    <option value="wwc">wwc</option>
+                                
+                                    <option value="hch">hch</option>
+                                
+                                    <option value="y23">y23</option>
+                                
+                                    <option value="vsh">vsh</option>
+                                
+                                    <option value="mcw">mcw</option>
+                                
+                                    <option value="x23">x23</option>
+                                
+                                    <option value="x07">x07</option>
+                                
+                                    <option value="cwh">cwh</option>
+                                
+                                    <option value="ktn">ktn</option>
+                                
+                                    <option value="y07">y07</option>
+                                
+                                    <option value="z07">z07</option>
+                                
+                                    <option value="ddj">ddj</option>
+                                
+                                    <option value="jqq">jqq</option>
+                                
+                                    <option value="wrr">wrr</option>
+                                
+                                    <option value="wjn">wjn</option>
+                                
+                                    <option value="nbw">nbw</option>
+                                
+                                    <option value="trc">trc</option>
+                                
+                                    <option value="y38">y38</option>
+                                
+                                    <option value="x38">x38</option>
+                                
+                                    <option value="z39">z39</option>
+                                
+                                    <option value="wtf">wtf</option>
+                                
+                                    <option value="npc">npc</option>
+                                
+                                    <option value="x27">x27</option>
+                                
+                                    <option value="tts">tts</option>
+                                
+                                    <option value="bsv">bsv</option>
+                                
+                                    <option value="y27">y27</option>
+                                
+                                    <option value="rkf">rkf</option>
+                                
+                                    <option value="tsp">tsp</option>
+                                
+                                    <option value="z30">z30</option>
+                                
+                                    <option value="kwp">kwp</option>
+                                
+                                    <option value="fvm">fvm</option>
+                                
+                                    <option value="pjv">pjv</option>
+                                
+                                    <option value="hhh">hhh</option>
+                                
+                                    <option value="qfj">qfj</option>
+                                
+                                    <option value="vsk">vsk</option>
+                                
+                                    <option value="z42">z42</option>
+                                
+                                    <option value="qcn">qcn</option>
+                                
+                                    <option value="fjq">fjq</option>
+                                
+                                    <option value="fkc">fkc</option>
+                                
+                                    <option value="svf">svf</option>
+                                
+                                    <option value="y42">y42</option>
+                                
+                                    <option value="x42">x42</option>
+                                
+                                    <option value="dwp">dwp</option>
+                                
+                                    <option value="rsm">rsm</option>
+                                
+                                    <option value="cbg">cbg</option>
+                                
+                                    <option value="srg">srg</option>
+                                
+                                    <option value="z26">z26</option>
+                                
+                                    <option value="fwn">fwn</option>
+                                
+                                    <option value="x26">x26</option>
+                                
+                                    <option value="y26">y26</option>
+                                
+                                    <option value="dnb">dnb</option>
+                                
+                                    <option value="x20">x20</option>
+                                
+                                    <option value="mvv">mvv</option>
+                                
+                                    <option value="mqg">mqg</option>
+                                
+                                    <option value="y20">y20</option>
+                                
+                                    <option value="vpb">vpb</option>
+                                
+                                    <option value="z43">z43</option>
+                                
+                                    <option value="vcd">vcd</option>
+                                
+                                    <option value="cst">cst</option>
+                                
+                                    <option value="jmq">jmq</option>
+                                
+                                    <option value="y43">y43</option>
+                                
+                                    <option value="x43">x43</option>
+                                
+                                    <option value="tkd">tkd</option>
+                                
+                                    <option value="thc">thc</option>
+                                
+                                    <option value="y03">y03</option>
+                                
+                                    <option value="x03">x03</option>
+                                
+                                    <option value="z03">z03</option>
+                                
+                                    <option value="shd">shd</option>
+                                
+                                    <option value="qhg">qhg</option>
+                                
+                                    <option value="z38">z38</option>
+                                
+                                    <option value="bwd">bwd</option>
+                                
+                                    <option value="rnr">rnr</option>
+                                
+                                    <option value="dkr">dkr</option>
+                                
+                                    <option value="bvc">bvc</option>
+                                
+                                    <option value="x05">x05</option>
+                                
+                                    <option value="y05">y05</option>
+                                
+                                    <option value="hdc">hdc</option>
+                                
+                                    <option value="bgf">bgf</option>
+                                
+                                    <option value="z06">z06</option>
+                                
+                                    <option value="qjh">qjh</option>
+                                
+                                    <option value="mcd">mcd</option>
+                                
+                                    <option value="z33">z33</option>
+                                
+                                    <option value="x33">x33</option>
+                                
+                                    <option value="y33">y33</option>
+                                
+                                    <option value="qcm">qcm</option>
+                                
+                                    <option value="nhw">nhw</option>
+                                
+                                    <option value="qdc">qdc</option>
+                                
+                                    <option value="dsf">dsf</option>
+                                
+                                    <option value="rvw">rvw</option>
+                                
+                                    <option value="bsh">bsh</option>
+                                
+                                    <option value="z34">z34</option>
+                                
+                                    <option value="mqv">mqv</option>
+                                
+                                    <option value="tjv">tjv</option>
+                                
+                                    <option value="x34">x34</option>
+                                
+                                    <option value="y34">y34</option>
+                                
+                                    <option value="rfs">rfs</option>
+                                
+                                    <option value="qjs">qjs</option>
+                                
+                                    <option value="prp">prp</option>
+                                
+                                    <option value="dmf">dmf</option>
+                                
+                                    <option value="z32">z32</option>
+                                
+                                    <option value="ncw">ncw</option>
+                                
+                                    <option value="y32">y32</option>
+                                
+                                    <option value="x32">x32</option>
+                                
+                                    <option value="z04">z04</option>
+                                
+                                    <option value="rrr">rrr</option>
+                                
+                                    <option value="hhb">hhb</option>
+                                
+                                    <option value="z16">z16</option>
+                                
+                                    <option value="hgs">hgs</option>
+                                
+                                    <option value="z21">z21</option>
+                                
+                                    <option value="y21">y21</option>
+                                
+                                    <option value="x21">x21</option>
+                                
+                                    <option value="wms">wms</option>
+                                
+                                    <option value="tpd">tpd</option>
+                                
+                                    <option value="sfb">sfb</option>
+                                
+                                    <option value="rng">rng</option>
+                                
+                                    <option value="rhp">rhp</option>
+                                
+                                    <option value="z24">z24</option>
+                                
+                                    <option value="mdw">mdw</option>
+                                
+                                    <option value="x24">x24</option>
+                                
+                                    <option value="y24">y24</option>
+                                
+                                    <option value="fbs">fbs</option>
+                                
+                                    <option value="dsn">dsn</option>
+                                
+                                    <option value="jjk">jjk</option>
+                                
+                                    <option value="gqg">gqg</option>
+                                
+                                    <option value="z45">z45</option>
+                                
+                                    <option value="gpb">gpb</option>
+                                
+                                    <option value="y31">y31</option>
+                                
+                                    <option value="x31">x31</option>
+                                
+                                    <option value="z31">z31</option>
+                                
+                                    <option value="x25">x25</option>
+                                
+                                    <option value="dwk">dwk</option>
+                                
+                                    <option value="y25">y25</option>
+                                
+                                    <option value="z25">z25</option>
+                                
+                                    <option value="bcm">bcm</option>
+                                
+                                    <option value="z40">z40</option>
+                                
+                                    <option value="y28">y28</option>
+                                
+                                    <option value="pcd">pcd</option>
+                                
+                                    <option value="phk">phk</option>
+                                
+                                    <option value="x28">x28</option>
+                                
+                                    <option value="hbb">hbb</option>
+                                
+                                    <option value="ffw">ffw</option>
+                                
+                                    <option value="z11">z11</option>
+                                
+                                    <option value="y11">y11</option>
+                                
+                                    <option value="x11">x11</option>
+                                
+                                    <option value="cjf">cjf</option>
+                                
+                                    <option value="vfs">vfs</option>
+                                
+                                    <option value="mvp">mvp</option>
+                                
+                                    <option value="z41">z41</option>
+                                
+                                    <option value="nkw">nkw</option>
+                                
+                                    <option value="x41">x41</option>
+                                
+                                    <option value="y41">y41</option>
+                                
+                                    <option value="z22">z22</option>
+                                
+                                    <option value="x36">x36</option>
+                                
+                                    <option value="ggk">ggk</option>
+                                
+                                    <option value="rhv">rhv</option>
+                                
+                                    <option value="y36">y36</option>
+                                
+                                    <option value="z36">z36</option>
+                                
+                                    <option value="bqf">bqf</option>
+                                
+                                    <option value="cjq">cjq</option>
+                                
+                                    <option value="rwd">rwd</option>
+                                
+                                    <option value="hpg">hpg</option>
+                                
+                                    <option value="z29">z29</option>
+                                
+                                    <option value="x08">x08</option>
+                                
+                                    <option value="bnr">bnr</option>
+                                
+                                    <option value="wcg">wcg</option>
+                                
+                                    <option value="y08">y08</option>
+                                
+                                    <option value="mfc">mfc</option>
+                                
+                                    <option value="y37">y37</option>
+                                
+                                    <option value="x37">x37</option>
+                                
+                                    <option value="z37">z37</option>
+                                
+                                    <option value="gqf">gqf</option>
+                                
+                                    <option value="z09">z09</option>
+                                
+                                    <option value="z20">z20</option>
+                                
+                                    <option value="rms">rms</option>
+                                
+                                    <option value="z08">z08</option>
+                                
+                                    <option value="wrn">wrn</option>
+                                
+                                    <option value="y18">y18</option>
+                                
+                                    <option value="x18">x18</option>
+                                
+                                    <option value="bcn">bcn</option>
+                                
+                                    <option value="z27">z27</option>
+                                
+                                    <option value="x01">x01</option>
+                                
+                                    <option value="y01">y01</option>
+                                
+                                    <option value="wsg">wsg</option>
+                                
+                                    <option value="pnw">pnw</option>
+                                
+                                    <option value="kpk">kpk</option>
+                                
+                                    <option value="x10">x10</option>
+                                
+                                    <option value="y10">y10</option>
+                                
+                                    <option value="y00">y00</option>
+                                
+                                    <option value="z00">z00</option>
+                                
+                                    <option value="x00">x00</option>
+                                
+                                    <option value="z01">z01</option>
+                                
+                                    <option value="qfg">qfg</option>
+                                
+                                    <option value="y06">y06</option>
+                                
+                                    <option value="x06">x06</option>
+                                
+                                    <option value="z28">z28</option>
+                                
+                                    <option value="wff">wff</option>
+                                
+                            </select>
+                        </div>
+                        <div class="col-2 pb-2">
+                            <button type="button" class="btn btn-primary btn-block" onclick="neighbourhoodHighlight({nodes: []});">Reset Selection</button>
+                        </div>
+                    </div>
+                </div>
+            
+            
+              <div id="filter-menu" class="card-header">
+                <div class="row no-gutters">
+                  <div class="col-3 pb-2">
+                    <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            onchange="updateFilter(value, 'item')"
+                            id="select-item"
+                        >
+                        <option value="">Select a network item</option>
+                        <option value="edge">edge</option>
+                        <option value="node">node</option>
+                    </select>
+                  </div>
+                  <div class="col-3 pb-2">
+                    <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            onchange="updateFilter(value, 'property')"
+                            id="select-property"
+                        >
+                        <option value="">Select a property...</option>
+                    </select>
+                  </div>
+                  <div class="col-3 pb-2">
+                    <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            id="select-value"
+                        >
+                        <option value="">Select value(s)...</option>
+                    </select>
+                  </div>
+                  <div class="col-1 pb-2">
+                    <button type="button" class="btn btn-primary btn-block" onclick="highlightFilter(filter);">Filter</button>
+                  </div>
+                  <div class="col-2 pb-2">
+                    <button type="button" class="btn btn-primary btn-block" onclick="clearFilter(true)">Reset Selection</button>
+                  </div>
+                </div>
+              </div>
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+            <div id="config"></div>
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+                  new TomSelect("#select-node",{
+                      create: false,
+                      sortField: {
+                          field: "text",
+                          direction: "asc"
+                      }
+                  });
+              
+
+              
+                  // explicitly using onItemAdd and this function as we need to save multiple values
+                  let updateValueFilter = function() {
+                      return function () {
+                      filter['value'].push(arguments[0])
+                      }
+                  }
+
+                  let valueControl = new TomSelect("#select-value",{
+                      maxItems: null,
+                      valueField: 'id',
+                      labelField: 'title',
+                      searchField: 'title',
+                      create: false,
+                      sortField: {
+                          field: "text",
+                          direction: "asc"
+                      },
+                      onItemAdd: updateValueFilter()
+                  });
+
+                  let addValues = function() {
+                      return function () {
+                          // clear the current value options and add the selected attribute values
+                          // tom-select handles duplicates
+                          let selectedProperty = arguments[0];
+                          valueControl.clear();
+                          valueControl.clearOptions();
+                          filter['value'] = []
+                          if (filter['item'] === 'node') {
+                              for (let each in allNodes) {
+                                  valueControl.addOption({
+                                      id:allNodes[each][selectedProperty],
+                                      title:allNodes[each][selectedProperty]
+                                  })
+                              }
+                          }
+                          else if (filter['item'] === 'edge') {
+                              for (let each in allEdges) {
+                                  valueControl.addOption({
+                                      id:allEdges[each][selectedProperty],
+                                      title:allEdges[each][selectedProperty]
+                                  })
+                              }
+                          }
+                      }
+                  };
+
+                  let propControl = new TomSelect("#select-property",{
+                      valueField: 'id',
+                      labelField: 'title',
+                      searchField: 'title',
+                      create: false,
+                      sortField: {
+                          field: "text",
+                          direction: "asc"
+                      },
+                      onItemAdd: addValues()
+                  });
+
+                  let addProperties = function() {
+                      return function () {
+                          // loops through the selected network item and adds the attributes to dropdown
+                          // tom-select handles duplicates
+                          clearFilter(false)
+                          if (arguments[0] === 'edge') {
+                              for (let each in allEdges) {
+                                  if (allEdges.hasOwnProperty(each)) {
+                                      for (let eachProp in allEdges[each]) {
+                                          if (allEdges[each].hasOwnProperty(eachProp)) {
+                                              propControl.addOption({id: eachProp, title: eachProp})
+                                          }
+                                      }
+                                  }
+                              }
+                          }
+                          else if (arguments[0] === 'node') {
+                              for (let each in allNodes) {
+                                  if (allNodes.hasOwnProperty(each)) {
+                                      for (let eachProp in allNodes[each]) {
+                                          if (allNodes[each].hasOwnProperty(eachProp)
+                                              && (eachProp !== 'hidden' && eachProp !== 'savedLabel'
+                                                  && eachProp !== 'hiddenLabel')) {
+                                              propControl.addOption({id: eachProp, title: eachProp})
+
+                                          }
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                  };
+
+                  let itemControl = new TomSelect("#select-item",{
+                      create: false,
+                      sortField:{
+                          field: "text",
+                          direction: "asc"
+                      },
+                      onItemAdd: addProperties()
+                  });
+
+                  function clearFilter(reset) {
+                      // utility function to clear all the selected filter options
+                      // if reset is set to true, the existing filter will be removed
+                      // else, only the dropdown options are cleared
+                      propControl.clear();
+                      propControl.clearOptions();
+                      valueControl.clear();
+                      valueControl.clearOptions();
+                      filter = {
+                          item : '',
+                          property : '',
+                          value : []
+                      }
+                      if (reset) {
+                          itemControl.clear();
+                          filterHighlight({nodes: []})
+                      }
+                  }
+
+                  function updateFilter(value, key) {
+                      // key could be 'item' or 'property' and value is as selected in dropdown
+                      filter[key] = value
+                  }
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "gray", "id": "x14", "label": "x14", "shape": "dot", "size": 10}, {"color": "crimson", "id": "cwj", "label": "cwj", "shape": "dot", "size": 10}, {"color": "purple", "id": "khg", "label": "khg", "shape": "dot", "size": 10}, {"color": "gray", "id": "y14", "label": "y14", "shape": "dot", "size": 10}, {"color": "navy", "id": "sth", "label": "sth", "shape": "dot", "size": 10}, {"color": "crimson", "id": "dhf", "label": "dhf", "shape": "dot", "size": 10}, {"color": "navy", "id": "gcs", "label": "gcs", "shape": "dot", "size": 10}, {"color": "navy", "id": "nsg", "label": "nsg", "shape": "dot", "size": 10}, {"color": "purple", "id": "kkt", "label": "kkt", "shape": "dot", "size": 10}, {"color": "crimson", "id": "hrr", "label": "hrr", "shape": "dot", "size": 10}, {"color": "gray", "id": "x04", "label": "x04", "shape": "dot", "size": 10}, {"color": "gray", "id": "y04", "label": "y04", "shape": "dot", "size": 10}, {"color": "purple", "id": "z05", "label": "z05", "shape": "dot", "size": 10}, {"color": "crimson", "id": "fdd", "label": "fdd", "shape": "dot", "size": 10}, {"color": "gray", "id": "y44", "label": "y44", "shape": "dot", "size": 10}, {"color": "purple", "id": "pfh", "label": "pfh", "shape": "dot", "size": 10}, {"color": "crimson", "id": "kbb", "label": "kbb", "shape": "dot", "size": 10}, {"color": "gray", "id": "x44", "label": "x44", "shape": "dot", "size": 10}, {"color": "crimson", "id": "khw", "label": "khw", "shape": "dot", "size": 10}, {"color": "purple", "id": "z44", "label": "z44", "shape": "dot", "size": 10}, {"color": "crimson", "id": "fqq", "label": "fqq", "shape": "dot", "size": 10}, {"color": "navy", "id": "bpg", "label": "bpg", "shape": "dot", "size": 10}, {"color": "purple", "id": "csk", "label": "csk", "shape": "dot", "size": 10}, {"color": "navy", "id": "pss", "label": "pss", "shape": "dot", "size": 10}, {"color": "crimson", "id": "hww", "label": "hww", "shape": "dot", "size": 10}, {"color": "gray", "id": "x09", "label": "x09", "shape": "dot", "size": 10}, {"color": "gray", "id": "y09", "label": "y09", "shape": "dot", "size": 10}, {"color": "purple", "id": "z10", "label": "z10", "shape": "dot", "size": 10}, {"color": "crimson", "id": "jgd", "label": "jgd", "shape": "dot", "size": 10}, {"color": "crimson", "id": "wmd", "label": "wmd", "shape": "dot", "size": 10}, {"color": "navy", "id": "jts", "label": "jts", "shape": "dot", "size": 10}, {"color": "gray", "id": "y16", "label": "y16", "shape": "dot", "size": 10}, {"color": "gray", "id": "x16", "label": "x16", "shape": "dot", "size": 10}, {"color": "crimson", "id": "kvv", "label": "kvv", "shape": "dot", "size": 10}, {"color": "purple", "id": "tds", "label": "tds", "shape": "dot", "size": 10}, {"color": "navy", "id": "mqr", "label": "mqr", "shape": "dot", "size": 10}, {"color": "crimson", "id": "swm", "label": "swm", "shape": "dot", "size": 10}, {"color": "purple", "id": "z17", "label": "z17", "shape": "dot", "size": 10}, {"color": "crimson", "id": "nfn", "label": "nfn", "shape": "dot", "size": 10}, {"color": "purple", "id": "z14", "label": "z14", "shape": "dot", "size": 10}, {"color": "navy", "id": "hdd", "label": "hdd", "shape": "dot", "size": 10}, {"color": "crimson", "id": "tsh", "label": "tsh", "shape": "dot", "size": 10}, {"color": "crimson", "id": "fhs", "label": "fhs", "shape": "dot", "size": 10}, {"color": "gray", "id": "y35", "label": "y35", "shape": "dot", "size": 10}, {"color": "purple", "id": "rpk", "label": "rpk", "shape": "dot", "size": 10}, {"color": "crimson", "id": "nbb", "label": "nbb", "shape": "dot", "size": 10}, {"color": "gray", "id": "x35", "label": "x35", "shape": "dot", "size": 10}, {"color": "crimson", "id": "fkk", "label": "fkk", "shape": "dot", "size": 10}, {"color": "purple", "id": "z35", "label": "z35", "shape": "dot", "size": 10}, {"color": "purple", "id": "bhw", "label": "bhw", "shape": "dot", "size": 10}, {"color": "purple", "id": "htp", "label": "htp", "shape": "dot", "size": 10}, {"color": "crimson", "id": "z15", "label": "z15", "shape": "dot", "size": 10}, {"color": "gray", "id": "y15", "label": "y15", "shape": "dot", "size": 10}, {"color": "gray", "id": "x15", "label": "x15", "shape": "dot", "size": 10}, {"color": "gray", "id": "x13", "label": "x13", "shape": "dot", "size": 10}, {"color": "purple", "id": "gnf", "label": "gnf", "shape": "dot", "size": 10}, {"color": "gray", "id": "y13", "label": "y13", "shape": "dot", "size": 10}, {"color": "purple", "id": "z13", "label": "z13", "shape": "dot", "size": 10}, {"color": "gray", "id": "y39", "label": "y39", "shape": "dot", "size": 10}, {"color": "crimson", "id": "qwn", "label": "qwn", "shape": "dot", "size": 10}, {"color": "purple", "id": "htw", "label": "htw", "shape": "dot", "size": 10}, {"color": "gray", "id": "x39", "label": "x39", "shape": "dot", "size": 10}, {"color": "navy", "id": "phm", "label": "phm", "shape": "dot", "size": 10}, {"color": "purple", "id": "nhr", "label": "nhr", "shape": "dot", "size": 10}, {"color": "purple", "id": "z19", "label": "z19", "shape": "dot", "size": 10}, {"color": "gray", "id": "x19", "label": "x19", "shape": "dot", "size": 10}, {"color": "gray", "id": "y19", "label": "y19", "shape": "dot", "size": 10}, {"color": "crimson", "id": "hcq", "label": "hcq", "shape": "dot", "size": 10}, {"color": "navy", "id": "wks", "label": "wks", "shape": "dot", "size": 10}, {"color": "crimson", "id": "gfq", "label": "gfq", "shape": "dot", "size": 10}, {"color": "crimson", "id": "twv", "label": "twv", "shape": "dot", "size": 10}, {"color": "gray", "id": "x40", "label": "x40", "shape": "dot", "size": 10}, {"color": "crimson", "id": "mpd", "label": "mpd", "shape": "dot", "size": 10}, {"color": "purple", "id": "bjw", "label": "bjw", "shape": "dot", "size": 10}, {"color": "gray", "id": "y40", "label": "y40", "shape": "dot", "size": 10}, {"color": "navy", "id": "fcd", "label": "fcd", "shape": "dot", "size": 10}, {"color": "navy", "id": "pvw", "label": "pvw", "shape": "dot", "size": 10}, {"color": "crimson", "id": "hsf", "label": "hsf", "shape": "dot", "size": 10}, {"color": "crimson", "id": "gqr", "label": "gqr", "shape": "dot", "size": 10}, {"color": "crimson", "id": "mdb", "label": "mdb", "shape": "dot", "size": 10}, {"color": "purple", "id": "z12", "label": "z12", "shape": "dot", "size": 10}, {"color": "purple", "id": "fsf", "label": "fsf", "shape": "dot", "size": 10}, {"color": "gray", "id": "y12", "label": "y12", "shape": "dot", "size": 10}, {"color": "gray", "id": "x12", "label": "x12", "shape": "dot", "size": 10}, {"color": "navy", "id": "sfw", "label": "sfw", "shape": "dot", "size": 10}, {"color": "gray", "id": "y29", "label": "y29", "shape": "dot", "size": 10}, {"color": "crimson", "id": "sbk", "label": "sbk", "shape": "dot", "size": 10}, {"color": "purple", "id": "nrv", "label": "nrv", "shape": "dot", "size": 10}, {"color": "gray", "id": "x29", "label": "x29", "shape": "dot", "size": 10}, {"color": "navy", "id": "vnp", "label": "vnp", "shape": "dot", "size": 10}, {"color": "crimson", "id": "kqk", "label": "kqk", "shape": "dot", "size": 10}, {"color": "navy", "id": "gjs", "label": "gjs", "shape": "dot", "size": 10}, {"color": "gray", "id": "x22", "label": "x22", "shape": "dot", "size": 10}, {"color": "gray", "id": "y22", "label": "y22", "shape": "dot", "size": 10}, {"color": "crimson", "id": "shk", "label": "shk", "shape": "dot", "size": 10}, {"color": "purple", "id": "vjk", "label": "vjk", "shape": "dot", "size": 10}, {"color": "navy", "id": "kqs", "label": "kqs", "shape": "dot", "size": 10}, {"color": "purple", "id": "z23", "label": "z23", "shape": "dot", "size": 10}, {"color": "crimson", "id": "hkg", "label": "hkg", "shape": "dot", "size": 10}, {"color": "navy", "id": "fww", "label": "fww", "shape": "dot", "size": 10}, {"color": "purple", "id": "hhm", "label": "hhm", "shape": "dot", "size": 10}, {"color": "crimson", "id": "rrk", "label": "rrk", "shape": "dot", "size": 10}, {"color": "gray", "id": "x17", "label": "x17", "shape": "dot", "size": 10}, {"color": "gray", "id": "y17", "label": "y17", "shape": "dot", "size": 10}, {"color": "purple", "id": "z18", "label": "z18", "shape": "dot", "size": 10}, {"color": "gray", "id": "x30", "label": "x30", "shape": "dot", "size": 10}, {"color": "crimson", "id": "bpn", "label": "bpn", "shape": "dot", "size": 10}, {"color": "purple", "id": "bjs", "label": "bjs", "shape": "dot", "size": 10}, {"color": "gray", "id": "y30", "label": "y30", "shape": "dot", "size": 10}, {"color": "navy", "id": "cwn", "label": "cwn", "shape": "dot", "size": 10}, {"color": "purple", "id": "mts", "label": "mts", "shape": "dot", "size": 10}, {"color": "purple", "id": "z02", "label": "z02", "shape": "dot", "size": 10}, {"color": "crimson", "id": "jgj", "label": "jgj", "shape": "dot", "size": 10}, {"color": "gray", "id": "x02", "label": "x02", "shape": "dot", "size": 10}, {"color": "gray", "id": "y02", "label": "y02", "shape": "dot", "size": 10}, {"color": "navy", "id": "ntr", "label": "ntr", "shape": "dot", "size": 10}, {"color": "crimson", "id": "wwc", "label": "wwc", "shape": "dot", "size": 10}, {"color": "crimson", "id": "hch", "label": "hch", "shape": "dot", "size": 10}, {"color": "gray", "id": "y23", "label": "y23", "shape": "dot", "size": 10}, {"color": "purple", "id": "vsh", "label": "vsh", "shape": "dot", "size": 10}, {"color": "crimson", "id": "mcw", "label": "mcw", "shape": "dot", "size": 10}, {"color": "gray", "id": "x23", "label": "x23", "shape": "dot", "size": 10}, {"color": "gray", "id": "x07", "label": "x07", "shape": "dot", "size": 10}, {"color": "purple", "id": "cwh", "label": "cwh", "shape": "dot", "size": 10}, {"color": "crimson", "id": "ktn", "label": "ktn", "shape": "dot", "size": 10}, {"color": "gray", "id": "y07", "label": "y07", "shape": "dot", "size": 10}, {"color": "purple", "id": "z07", "label": "z07", "shape": "dot", "size": 10}, {"color": "crimson", "id": "ddj", "label": "ddj", "shape": "dot", "size": 10}, {"color": "crimson", "id": "jqq", "label": "jqq", "shape": "dot", "size": 10}, {"color": "navy", "id": "wrr", "label": "wrr", "shape": "dot", "size": 10}, {"color": "navy", "id": "wjn", "label": "wjn", "shape": "dot", "size": 10}, {"color": "purple", "id": "nbw", "label": "nbw", "shape": "dot", "size": 10}, {"color": "crimson", "id": "trc", "label": "trc", "shape": "dot", "size": 10}, {"color": "gray", "id": "y38", "label": "y38", "shape": "dot", "size": 10}, {"color": "gray", "id": "x38", "label": "x38", "shape": "dot", "size": 10}, {"color": "purple", "id": "z39", "label": "z39", "shape": "dot", "size": 10}, {"color": "crimson", "id": "wtf", "label": "wtf", "shape": "dot", "size": 10}, {"color": "crimson", "id": "npc", "label": "npc", "shape": "dot", "size": 10}, {"color": "gray", "id": "x27", "label": "x27", "shape": "dot", "size": 10}, {"color": "crimson", "id": "tts", "label": "tts", "shape": "dot", "size": 10}, {"color": "purple", "id": "bsv", "label": "bsv", "shape": "dot", "size": 10}, {"color": "gray", "id": "y27", "label": "y27", "shape": "dot", "size": 10}, {"color": "navy", "id": "rkf", "label": "rkf", "shape": "dot", "size": 10}, {"color": "crimson", "id": "tsp", "label": "tsp", "shape": "dot", "size": 10}, {"color": "purple", "id": "z30", "label": "z30", "shape": "dot", "size": 10}, {"color": "crimson", "id": "kwp", "label": "kwp", "shape": "dot", "size": 10}, {"color": "navy", "id": "fvm", "label": "fvm", "shape": "dot", "size": 10}, {"color": "crimson", "id": "pjv", "label": "pjv", "shape": "dot", "size": 10}, {"color": "purple", "id": "hhh", "label": "hhh", "shape": "dot", "size": 10}, {"color": "crimson", "id": "qfj", "label": "qfj", "shape": "dot", "size": 10}, {"color": "navy", "id": "vsk", "label": "vsk", "shape": "dot", "size": 10}, {"color": "purple", "id": "z42", "label": "z42", "shape": "dot", "size": 10}, {"color": "crimson", "id": "qcn", "label": "qcn", "shape": "dot", "size": 10}, {"color": "crimson", "id": "fjq", "label": "fjq", "shape": "dot", "size": 10}, {"color": "crimson", "id": "fkc", "label": "fkc", "shape": "dot", "size": 10}, {"color": "purple", "id": "svf", "label": "svf", "shape": "dot", "size": 10}, {"color": "gray", "id": "y42", "label": "y42", "shape": "dot", "size": 10}, {"color": "gray", "id": "x42", "label": "x42", "shape": "dot", "size": 10}, {"color": "navy", "id": "dwp", "label": "dwp", "shape": "dot", "size": 10}, {"color": "crimson", "id": "rsm", "label": "rsm", "shape": "dot", "size": 10}, {"color": "crimson", "id": "cbg", "label": "cbg", "shape": "dot", "size": 10}, {"color": "crimson", "id": "srg", "label": "srg", "shape": "dot", "size": 10}, {"color": "purple", "id": "z26", "label": "z26", "shape": "dot", "size": 10}, {"color": "purple", "id": "fwn", "label": "fwn", "shape": "dot", "size": 10}, {"color": "gray", "id": "x26", "label": "x26", "shape": "dot", "size": 10}, {"color": "gray", "id": "y26", "label": "y26", "shape": "dot", "size": 10}, {"color": "navy", "id": "dnb", "label": "dnb", "shape": "dot", "size": 10}, {"color": "gray", "id": "x20", "label": "x20", "shape": "dot", "size": 10}, {"color": "purple", "id": "mvv", "label": "mvv", "shape": "dot", "size": 10}, {"color": "crimson", "id": "mqg", "label": "mqg", "shape": "dot", "size": 10}, {"color": "gray", "id": "y20", "label": "y20", "shape": "dot", "size": 10}, {"color": "navy", "id": "vpb", "label": "vpb", "shape": "dot", "size": 10}, {"color": "purple", "id": "z43", "label": "z43", "shape": "dot", "size": 10}, {"color": "crimson", "id": "vcd", "label": "vcd", "shape": "dot", "size": 10}, {"color": "crimson", "id": "cst", "label": "cst", "shape": "dot", "size": 10}, {"color": "purple", "id": "jmq", "label": "jmq", "shape": "dot", "size": 10}, {"color": "gray", "id": "y43", "label": "y43", "shape": "dot", "size": 10}, {"color": "gray", "id": "x43", "label": "x43", "shape": "dot", "size": 10}, {"color": "purple", "id": "tkd", "label": "tkd", "shape": "dot", "size": 10}, {"color": "crimson", "id": "thc", "label": "thc", "shape": "dot", "size": 10}, {"color": "gray", "id": "y03", "label": "y03", "shape": "dot", "size": 10}, {"color": "gray", "id": "x03", "label": "x03", "shape": "dot", "size": 10}, {"color": "purple", "id": "z03", "label": "z03", "shape": "dot", "size": 10}, {"color": "navy", "id": "shd", "label": "shd", "shape": "dot", "size": 10}, {"color": "crimson", "id": "qhg", "label": "qhg", "shape": "dot", "size": 10}, {"color": "purple", "id": "z38", "label": "z38", "shape": "dot", "size": 10}, {"color": "crimson", "id": "bwd", "label": "bwd", "shape": "dot", "size": 10}, {"color": "crimson", "id": "rnr", "label": "rnr", "shape": "dot", "size": 10}, {"color": "purple", "id": "dkr", "label": "dkr", "shape": "dot", "size": 10}, {"color": "navy", "id": "bvc", "label": "bvc", "shape": "dot", "size": 10}, {"color": "gray", "id": "x05", "label": "x05", "shape": "dot", "size": 10}, {"color": "gray", "id": "y05", "label": "y05", "shape": "dot", "size": 10}, {"color": "crimson", "id": "hdc", "label": "hdc", "shape": "dot", "size": 10}, {"color": "crimson", "id": "bgf", "label": "bgf", "shape": "dot", "size": 10}, {"color": "purple", "id": "z06", "label": "z06", "shape": "dot", "size": 10}, {"color": "purple", "id": "qjh", "label": "qjh", "shape": "dot", "size": 10}, {"color": "crimson", "id": "mcd", "label": "mcd", "shape": "dot", "size": 10}, {"color": "purple", "id": "z33", "label": "z33", "shape": "dot", "size": 10}, {"color": "gray", "id": "x33", "label": "x33", "shape": "dot", "size": 10}, {"color": "gray", "id": "y33", "label": "y33", "shape": "dot", "size": 10}, {"color": "navy", "id": "qcm", "label": "qcm", "shape": "dot", "size": 10}, {"color": "crimson", "id": "nhw", "label": "nhw", "shape": "dot", "size": 10}, {"color": "crimson", "id": "qdc", "label": "qdc", "shape": "dot", "size": 10}, {"color": "navy", "id": "dsf", "label": "dsf", "shape": "dot", "size": 10}, {"color": "crimson", "id": "rvw", "label": "rvw", "shape": "dot", "size": 10}, {"color": "crimson", "id": "bsh", "label": "bsh", "shape": "dot", "size": 10}, {"color": "purple", "id": "z34", "label": "z34", "shape": "dot", "size": 10}, {"color": "crimson", "id": "mqv", "label": "mqv", "shape": "dot", "size": 10}, {"color": "purple", "id": "tjv", "label": "tjv", "shape": "dot", "size": 10}, {"color": "gray", "id": "x34", "label": "x34", "shape": "dot", "size": 10}, {"color": "gray", "id": "y34", "label": "y34", "shape": "dot", "size": 10}, {"color": "navy", "id": "rfs", "label": "rfs", "shape": "dot", "size": 10}, {"color": "navy", "id": "qjs", "label": "qjs", "shape": "dot", "size": 10}, {"color": "crimson", "id": "prp", "label": "prp", "shape": "dot", "size": 10}, {"color": "crimson", "id": "dmf", "label": "dmf", "shape": "dot", "size": 10}, {"color": "purple", "id": "z32", "label": "z32", "shape": "dot", "size": 10}, {"color": "purple", "id": "ncw", "label": "ncw", "shape": "dot", "size": 10}, {"color": "gray", "id": "y32", "label": "y32", "shape": "dot", "size": 10}, {"color": "gray", "id": "x32", "label": "x32", "shape": "dot", "size": 10}, {"color": "purple", "id": "z04", "label": "z04", "shape": "dot", "size": 10}, {"color": "crimson", "id": "rrr", "label": "rrr", "shape": "dot", "size": 10}, {"color": "crimson", "id": "hhb", "label": "hhb", "shape": "dot", "size": 10}, {"color": "purple", "id": "z16", "label": "z16", "shape": "dot", "size": 10}, {"color": "purple", "id": "hgs", "label": "hgs", "shape": "dot", "size": 10}, {"color": "purple", "id": "z21", "label": "z21", "shape": "dot", "size": 10}, {"color": "gray", "id": "y21", "label": "y21", "shape": "dot", "size": 10}, {"color": "gray", "id": "x21", "label": "x21", "shape": "dot", "size": 10}, {"color": "crimson", "id": "wms", "label": "wms", "shape": "dot", "size": 10}, {"color": "navy", "id": "tpd", "label": "tpd", "shape": "dot", "size": 10}, {"color": "crimson", "id": "sfb", "label": "sfb", "shape": "dot", "size": 10}, {"color": "navy", "id": "rng", "label": "rng", "shape": "dot", "size": 10}, {"color": "crimson", "id": "rhp", "label": "rhp", "shape": "dot", "size": 10}, {"color": "purple", "id": "z24", "label": "z24", "shape": "dot", "size": 10}, {"color": "purple", "id": "mdw", "label": "mdw", "shape": "dot", "size": 10}, {"color": "gray", "id": "x24", "label": "x24", "shape": "dot", "size": 10}, {"color": "gray", "id": "y24", "label": "y24", "shape": "dot", "size": 10}, {"color": "navy", "id": "fbs", "label": "fbs", "shape": "dot", "size": 10}, {"color": "navy", "id": "dsn", "label": "dsn", "shape": "dot", "size": 10}, {"color": "crimson", "id": "jjk", "label": "jjk", "shape": "dot", "size": 10}, {"color": "navy", "id": "gqg", "label": "gqg", "shape": "dot", "size": 10}, {"color": "navy", "id": "z45", "label": "z45", "shape": "dot", "size": 10}, {"color": "purple", "id": "gpb", "label": "gpb", "shape": "dot", "size": 10}, {"color": "gray", "id": "y31", "label": "y31", "shape": "dot", "size": 10}, {"color": "gray", "id": "x31", "label": "x31", "shape": "dot", "size": 10}, {"color": "purple", "id": "z31", "label": "z31", "shape": "dot", "size": 10}, {"color": "gray", "id": "x25", "label": "x25", "shape": "dot", "size": 10}, {"color": "purple", "id": "dwk", "label": "dwk", "shape": "dot", "size": 10}, {"color": "gray", "id": "y25", "label": "y25", "shape": "dot", "size": 10}, {"color": "purple", "id": "z25", "label": "z25", "shape": "dot", "size": 10}, {"color": "crimson", "id": "bcm", "label": "bcm", "shape": "dot", "size": 10}, {"color": "purple", "id": "z40", "label": "z40", "shape": "dot", "size": 10}, {"color": "gray", "id": "y28", "label": "y28", "shape": "dot", "size": 10}, {"color": "crimson", "id": "pcd", "label": "pcd", "shape": "dot", "size": 10}, {"color": "purple", "id": "phk", "label": "phk", "shape": "dot", "size": 10}, {"color": "gray", "id": "x28", "label": "x28", "shape": "dot", "size": 10}, {"color": "navy", "id": "hbb", "label": "hbb", "shape": "dot", "size": 10}, {"color": "purple", "id": "ffw", "label": "ffw", "shape": "dot", "size": 10}, {"color": "purple", "id": "z11", "label": "z11", "shape": "dot", "size": 10}, {"color": "gray", "id": "y11", "label": "y11", "shape": "dot", "size": 10}, {"color": "gray", "id": "x11", "label": "x11", "shape": "dot", "size": 10}, {"color": "navy", "id": "cjf", "label": "cjf", "shape": "dot", "size": 10}, {"color": "crimson", "id": "vfs", "label": "vfs", "shape": "dot", "size": 10}, {"color": "crimson", "id": "mvp", "label": "mvp", "shape": "dot", "size": 10}, {"color": "purple", "id": "z41", "label": "z41", "shape": "dot", "size": 10}, {"color": "purple", "id": "nkw", "label": "nkw", "shape": "dot", "size": 10}, {"color": "gray", "id": "x41", "label": "x41", "shape": "dot", "size": 10}, {"color": "gray", "id": "y41", "label": "y41", "shape": "dot", "size": 10}, {"color": "purple", "id": "z22", "label": "z22", "shape": "dot", "size": 10}, {"color": "gray", "id": "x36", "label": "x36", "shape": "dot", "size": 10}, {"color": "crimson", "id": "ggk", "label": "ggk", "shape": "dot", "size": 10}, {"color": "purple", "id": "rhv", "label": "rhv", "shape": "dot", "size": 10}, {"color": "gray", "id": "y36", "label": "y36", "shape": "dot", "size": 10}, {"color": "purple", "id": "z36", "label": "z36", "shape": "dot", "size": 10}, {"color": "crimson", "id": "bqf", "label": "bqf", "shape": "dot", "size": 10}, {"color": "crimson", "id": "cjq", "label": "cjq", "shape": "dot", "size": 10}, {"color": "crimson", "id": "rwd", "label": "rwd", "shape": "dot", "size": 10}, {"color": "navy", "id": "hpg", "label": "hpg", "shape": "dot", "size": 10}, {"color": "purple", "id": "z29", "label": "z29", "shape": "dot", "size": 10}, {"color": "gray", "id": "x08", "label": "x08", "shape": "dot", "size": 10}, {"color": "crimson", "id": "bnr", "label": "bnr", "shape": "dot", "size": 10}, {"color": "purple", "id": "wcg", "label": "wcg", "shape": "dot", "size": 10}, {"color": "gray", "id": "y08", "label": "y08", "shape": "dot", "size": 10}, {"color": "purple", "id": "mfc", "label": "mfc", "shape": "dot", "size": 10}, {"color": "gray", "id": "y37", "label": "y37", "shape": "dot", "size": 10}, {"color": "gray", "id": "x37", "label": "x37", "shape": "dot", "size": 10}, {"color": "purple", "id": "z37", "label": "z37", "shape": "dot", "size": 10}, {"color": "navy", "id": "gqf", "label": "gqf", "shape": "dot", "size": 10}, {"color": "purple", "id": "z09", "label": "z09", "shape": "dot", "size": 10}, {"color": "navy", "id": "z20", "label": "z20", "shape": "dot", "size": 10}, {"color": "crimson", "id": "rms", "label": "rms", "shape": "dot", "size": 10}, {"color": "purple", "id": "z08", "label": "z08", "shape": "dot", "size": 10}, {"color": "purple", "id": "wrn", "label": "wrn", "shape": "dot", "size": 10}, {"color": "gray", "id": "y18", "label": "y18", "shape": "dot", "size": 10}, {"color": "gray", "id": "x18", "label": "x18", "shape": "dot", "size": 10}, {"color": "crimson", "id": "bcn", "label": "bcn", "shape": "dot", "size": 10}, {"color": "purple", "id": "z27", "label": "z27", "shape": "dot", "size": 10}, {"color": "gray", "id": "x01", "label": "x01", "shape": "dot", "size": 10}, {"color": "gray", "id": "y01", "label": "y01", "shape": "dot", "size": 10}, {"color": "crimson", "id": "wsg", "label": "wsg", "shape": "dot", "size": 10}, {"color": "purple", "id": "pnw", "label": "pnw", "shape": "dot", "size": 10}, {"color": "purple", "id": "kpk", "label": "kpk", "shape": "dot", "size": 10}, {"color": "gray", "id": "x10", "label": "x10", "shape": "dot", "size": 10}, {"color": "gray", "id": "y10", "label": "y10", "shape": "dot", "size": 10}, {"color": "gray", "id": "y00", "label": "y00", "shape": "dot", "size": 10}, {"color": "purple", "id": "z00", "label": "z00", "shape": "dot", "size": 10}, {"color": "gray", "id": "x00", "label": "x00", "shape": "dot", "size": 10}, {"color": "purple", "id": "z01", "label": "z01", "shape": "dot", "size": 10}, {"color": "purple", "id": "qfg", "label": "qfg", "shape": "dot", "size": 10}, {"color": "gray", "id": "y06", "label": "y06", "shape": "dot", "size": 10}, {"color": "gray", "id": "x06", "label": "x06", "shape": "dot", "size": 10}, {"color": "purple", "id": "z28", "label": "z28", "shape": "dot", "size": 10}, {"color": "crimson", "id": "wff", "label": "wff", "shape": "dot", "size": 10}]);
+                  edges = new vis.DataSet([{"from": "x14", "to": "cwj", "width": 1}, {"from": "x14", "to": "khg", "width": 1}, {"from": "y14", "to": "cwj", "width": 1}, {"from": "y14", "to": "khg", "width": 1}, {"from": "cwj", "to": "sth", "width": 1}, {"from": "dhf", "to": "gcs", "width": 1}, {"from": "dhf", "to": "nsg", "width": 1}, {"from": "dhf", "to": "kkt", "width": 1}, {"from": "hrr", "to": "gcs", "width": 1}, {"from": "hrr", "to": "x04", "width": 1}, {"from": "hrr", "to": "y04", "width": 1}, {"from": "gcs", "to": "z05", "width": 1}, {"from": "gcs", "to": "fdd", "width": 1}, {"from": "y44", "to": "pfh", "width": 1}, {"from": "y44", "to": "kbb", "width": 1}, {"from": "x44", "to": "pfh", "width": 1}, {"from": "x44", "to": "kbb", "width": 1}, {"from": "pfh", "to": "khw", "width": 1}, {"from": "pfh", "to": "z44", "width": 1}, {"from": "fqq", "to": "bpg", "width": 1}, {"from": "fqq", "to": "csk", "width": 1}, {"from": "fqq", "to": "pss", "width": 1}, {"from": "hww", "to": "bpg", "width": 1}, {"from": "hww", "to": "x09", "width": 1}, {"from": "hww", "to": "y09", "width": 1}, {"from": "bpg", "to": "z10", "width": 1}, {"from": "bpg", "to": "jgd", "width": 1}, {"from": "wmd", "to": "jts", "width": 1}, {"from": "wmd", "to": "y16", "width": 1}, {"from": "wmd", "to": "x16", "width": 1}, {"from": "kvv", "to": "jts", "width": 1}, {"from": "kvv", "to": "tds", "width": 1}, {"from": "kvv", "to": "mqr", "width": 1}, {"from": "jts", "to": "swm", "width": 1}, {"from": "jts", "to": "z17", "width": 1}, {"from": "khg", "to": "nfn", "width": 1}, {"from": "khg", "to": "z14", "width": 1}, {"from": "hdd", "to": "nfn", "width": 1}, {"from": "hdd", "to": "z14", "width": 1}, {"from": "hdd", "to": "tsh", "width": 1}, {"from": "hdd", "to": "fhs", "width": 1}, {"from": "nfn", "to": "sth", "width": 1}, {"from": "y35", "to": "rpk", "width": 1}, {"from": "y35", "to": "nbb", "width": 1}, {"from": "x35", "to": "rpk", "width": 1}, {"from": "x35", "to": "nbb", "width": 1}, {"from": "rpk", "to": "fkk", "width": 1}, {"from": "rpk", "to": "z35", "width": 1}, {"from": "bhw", "to": "htp", "width": 1}, {"from": "bhw", "to": "z15", "width": 1}, {"from": "bhw", "to": "y15", "width": 1}, {"from": "bhw", "to": "x15", "width": 1}, {"from": "sth", "to": "htp", "width": 1}, {"from": "sth", "to": "z15", "width": 1}, {"from": "htp", "to": "mqr", "width": 1}, {"from": "x13", "to": "gnf", "width": 1}, {"from": "x13", "to": "fhs", "width": 1}, {"from": "y13", "to": "gnf", "width": 1}, {"from": "y13", "to": "fhs", "width": 1}, {"from": "gnf", "to": "tsh", "width": 1}, {"from": "gnf", "to": "z13", "width": 1}, {"from": "y39", "to": "qwn", "width": 1}, {"from": "y39", "to": "htw", "width": 1}, {"from": "x39", "to": "qwn", "width": 1}, {"from": "x39", "to": "htw", "width": 1}, {"from": "qwn", "to": "phm", "width": 1}, {"from": "nhr", "to": "z19", "width": 1}, {"from": "nhr", "to": "x19", "width": 1}, {"from": "nhr", "to": "y19", "width": 1}, {"from": "nhr", "to": "hcq", "width": 1}, {"from": "wks", "to": "z19", "width": 1}, {"from": "wks", "to": "hcq", "width": 1}, {"from": "wks", "to": "gfq", "width": 1}, {"from": "wks", "to": "twv", "width": 1}, {"from": "x40", "to": "mpd", "width": 1}, {"from": "x40", "to": "bjw", "width": 1}, {"from": "y40", "to": "mpd", "width": 1}, {"from": "y40", "to": "bjw", "width": 1}, {"from": "mpd", "to": "fcd", "width": 1}, {"from": "pvw", "to": "hsf", "width": 1}, {"from": "pvw", "to": "gqr", "width": 1}, {"from": "pvw", "to": "mdb", "width": 1}, {"from": "pvw", "to": "z12", "width": 1}, {"from": "fsf", "to": "hsf", "width": 1}, {"from": "fsf", "to": "y12", "width": 1}, {"from": "fsf", "to": "x12", "width": 1}, {"from": "fsf", "to": "z12", "width": 1}, {"from": "hsf", "to": "sfw", "width": 1}, {"from": "y29", "to": "sbk", "width": 1}, {"from": "y29", "to": "nrv", "width": 1}, {"from": "x29", "to": "sbk", "width": 1}, {"from": "x29", "to": "nrv", "width": 1}, {"from": "sbk", "to": "vnp", "width": 1}, {"from": "kqk", "to": "gjs", "width": 1}, {"from": "kqk", "to": "x22", "width": 1}, {"from": "kqk", "to": "y22", "width": 1}, {"from": "shk", "to": "gjs", "width": 1}, {"from": "shk", "to": "vjk", "width": 1}, {"from": "shk", "to": "kqs", "width": 1}, {"from": "gjs", "to": "z23", "width": 1}, {"from": "gjs", "to": "hkg", "width": 1}, {"from": "swm", "to": "fww", "width": 1}, {"from": "swm", "to": "hhm", "width": 1}, {"from": "rrk", "to": "fww", "width": 1}, {"from": "rrk", "to": "x17", "width": 1}, {"from": "rrk", "to": "y17", "width": 1}, {"from": "fww", "to": "z18", "width": 1}, {"from": "fww", "to": "gfq", "width": 1}, {"from": "x30", "to": "bpn", "width": 1}, {"from": "x30", "to": "bjs", "width": 1}, {"from": "y30", "to": "bpn", "width": 1}, {"from": "y30", "to": "bjs", "width": 1}, {"from": "bpn", "to": "cwn", "width": 1}, {"from": "mts", "to": "z02", "width": 1}, {"from": "mts", "to": "jgj", "width": 1}, {"from": "mts", "to": "x02", "width": 1}, {"from": "mts", "to": "y02", "width": 1}, {"from": "ntr", "to": "z02", "width": 1}, {"from": "ntr", "to": "wwc", "width": 1}, {"from": "ntr", "to": "hch", "width": 1}, {"from": "ntr", "to": "jgj", "width": 1}, {"from": "y23", "to": "vsh", "width": 1}, {"from": "y23", "to": "mcw", "width": 1}, {"from": "x23", "to": "vsh", "width": 1}, {"from": "x23", "to": "mcw", "width": 1}, {"from": "vsh", "to": "z23", "width": 1}, {"from": "vsh", "to": "hkg", "width": 1}, {"from": "x07", "to": "cwh", "width": 1}, {"from": "x07", "to": "ktn", "width": 1}, {"from": "y07", "to": "cwh", "width": 1}, {"from": "y07", "to": "ktn", "width": 1}, {"from": "cwh", "to": "z07", "width": 1}, {"from": "cwh", "to": "ddj", "width": 1}, {"from": "jqq", "to": "wrr", "width": 1}, {"from": "jqq", "to": "wjn", "width": 1}, {"from": "jqq", "to": "nbw", "width": 1}, {"from": "trc", "to": "wrr", "width": 1}, {"from": "trc", "to": "y38", "width": 1}, {"from": "trc", "to": "x38", "width": 1}, {"from": "wrr", "to": "z39", "width": 1}, {"from": "wrr", "to": "wtf", "width": 1}, {"from": "y12", "to": "npc", "width": 1}, {"from": "x12", "to": "npc", "width": 1}, {"from": "x27", "to": "tts", "width": 1}, {"from": "x27", "to": "bsv", "width": 1}, {"from": "y27", "to": "tts", "width": 1}, {"from": "y27", "to": "bsv", "width": 1}, {"from": "tts", "to": "rkf", "width": 1}, {"from": "bjs", "to": "tsp", "width": 1}, {"from": "bjs", "to": "z30", "width": 1}, {"from": "vnp", "to": "tsp", "width": 1}, {"from": "vnp", "to": "kwp", "width": 1}, {"from": "vnp", "to": "z30", "width": 1}, {"from": "tsp", "to": "cwn", "width": 1}, {"from": "hcq", "to": "fvm", "width": 1}, {"from": "pjv", "to": "fvm", "width": 1}, {"from": "pjv", "to": "y19", "width": 1}, {"from": "pjv", "to": "x19", "width": 1}, {"from": "fvm", "to": "hhh", "width": 1}, {"from": "fvm", "to": "qfj", "width": 1}, {"from": "vsk", "to": "z42", "width": 1}, {"from": "vsk", "to": "qcn", "width": 1}, {"from": "vsk", "to": "fjq", "width": 1}, {"from": "vsk", "to": "fkc", "width": 1}, {"from": "svf", "to": "z42", "width": 1}, {"from": "svf", "to": "fkc", "width": 1}, {"from": "svf", "to": "y42", "width": 1}, {"from": "svf", "to": "x42", "width": 1}, {"from": "dwp", "to": "rsm", "width": 1}, {"from": "dwp", "to": "cbg", "width": 1}, {"from": "dwp", "to": "srg", "width": 1}, {"from": "dwp", "to": "z26", "width": 1}, {"from": "fwn", "to": "rsm", "width": 1}, {"from": "fwn", "to": "x26", "width": 1}, {"from": "fwn", "to": "y26", "width": 1}, {"from": "fwn", "to": "z26", "width": 1}, {"from": "rsm", "to": "dnb", "width": 1}, {"from": "x20", "to": "mvv", "width": 1}, {"from": "x20", "to": "mqg", "width": 1}, {"from": "y20", "to": "mvv", "width": 1}, {"from": "y20", "to": "mqg", "width": 1}, {"from": "mvv", "to": "hhh", "width": 1}, {"from": "mvv", "to": "qfj", "width": 1}, {"from": "vpb", "to": "z43", "width": 1}, {"from": "vpb", "to": "fkc", "width": 1}, {"from": "vpb", "to": "vcd", "width": 1}, {"from": "vpb", "to": "cst", "width": 1}, {"from": "jmq", "to": "z43", "width": 1}, {"from": "jmq", "to": "y43", "width": 1}, {"from": "jmq", "to": "x43", "width": 1}, {"from": "jmq", "to": "cst", "width": 1}, {"from": "tkd", "to": "thc", "width": 1}, {"from": "tkd", "to": "y03", "width": 1}, {"from": "tkd", "to": "x03", "width": 1}, {"from": "tkd", "to": "z03", "width": 1}, {"from": "shd", "to": "thc", "width": 1}, {"from": "shd", "to": "qhg", "width": 1}, {"from": "shd", "to": "jgj", "width": 1}, {"from": "shd", "to": "z03", "width": 1}, {"from": "thc", "to": "nsg", "width": 1}, {"from": "nbw", "to": "z38", "width": 1}, {"from": "nbw", "to": "x38", "width": 1}, {"from": "nbw", "to": "y38", "width": 1}, {"from": "wjn", "to": "z38", "width": 1}, {"from": "wjn", "to": "bwd", "width": 1}, {"from": "wjn", "to": "rnr", "width": 1}, {"from": "y17", "to": "hhm", "width": 1}, {"from": "x17", "to": "hhm", "width": 1}, {"from": "hhm", "to": "z17", "width": 1}, {"from": "dkr", "to": "bvc", "width": 1}, {"from": "dkr", "to": "x05", "width": 1}, {"from": "dkr", "to": "y05", "width": 1}, {"from": "fdd", "to": "bvc", "width": 1}, {"from": "fdd", "to": "hdc", "width": 1}, {"from": "bvc", "to": "bgf", "width": 1}, {"from": "bvc", "to": "z06", "width": 1}, {"from": "qjh", "to": "mcd", "width": 1}, {"from": "qjh", "to": "z33", "width": 1}, {"from": "qjh", "to": "x33", "width": 1}, {"from": "qjh", "to": "y33", "width": 1}, {"from": "qcm", "to": "mcd", "width": 1}, {"from": "qcm", "to": "z33", "width": 1}, {"from": "qcm", "to": "nhw", "width": 1}, {"from": "qcm", "to": "qdc", "width": 1}, {"from": "mcd", "to": "dsf", "width": 1}, {"from": "x26", "to": "rvw", "width": 1}, {"from": "y26", "to": "rvw", "width": 1}, {"from": "dsf", "to": "bsh", "width": 1}, {"from": "dsf", "to": "z34", "width": 1}, {"from": "dsf", "to": "mqv", "width": 1}, {"from": "tjv", "to": "bsh", "width": 1}, {"from": "tjv", "to": "x34", "width": 1}, {"from": "tjv", "to": "y34", "width": 1}, {"from": "tjv", "to": "z34", "width": 1}, {"from": "bsh", "to": "rfs", "width": 1}, {"from": "qjs", "to": "nhw", "width": 1}, {"from": "qjs", "to": "prp", "width": 1}, {"from": "qjs", "to": "dmf", "width": 1}, {"from": "qjs", "to": "z32", "width": 1}, {"from": "ncw", "to": "nhw", "width": 1}, {"from": "ncw", "to": "y32", "width": 1}, {"from": "ncw", "to": "x32", "width": 1}, {"from": "ncw", "to": "z32", "width": 1}, {"from": "nsg", "to": "z04", "width": 1}, {"from": "nsg", "to": "rrr", "width": 1}, {"from": "kkt", "to": "z04", "width": 1}, {"from": "kkt", "to": "y04", "width": 1}, {"from": "kkt", "to": "x04", "width": 1}, {"from": "hhb", "to": "mqr", "width": 1}, {"from": "hhb", "to": "y15", "width": 1}, {"from": "hhb", "to": "x15", "width": 1}, {"from": "mqr", "to": "z16", "width": 1}, {"from": "hgs", "to": "z21", "width": 1}, {"from": "hgs", "to": "y21", "width": 1}, {"from": "hgs", "to": "x21", "width": 1}, {"from": "hgs", "to": "wms", "width": 1}, {"from": "hhh", "to": "z21", "width": 1}, {"from": "hhh", "to": "wms", "width": 1}, {"from": "htw", "to": "z39", "width": 1}, {"from": "htw", "to": "wtf", "width": 1}, {"from": "tpd", "to": "z07", "width": 1}, {"from": "tpd", "to": "ddj", "width": 1}, {"from": "tpd", "to": "bgf", "width": 1}, {"from": "tpd", "to": "sfb", "width": 1}, {"from": "hdc", "to": "z05", "width": 1}, {"from": "hdc", "to": "y05", "width": 1}, {"from": "hdc", "to": "x05", "width": 1}, {"from": "rng", "to": "rhp", "width": 1}, {"from": "rng", "to": "z24", "width": 1}, {"from": "rng", "to": "hkg", "width": 1}, {"from": "rng", "to": "mcw", "width": 1}, {"from": "mdw", "to": "rhp", "width": 1}, {"from": "mdw", "to": "x24", "width": 1}, {"from": "mdw", "to": "y24", "width": 1}, {"from": "mdw", "to": "z24", "width": 1}, {"from": "rhp", "to": "fbs", "width": 1}, {"from": "ddj", "to": "dsn", "width": 1}, {"from": "x43", "to": "jjk", "width": 1}, {"from": "y43", "to": "jjk", "width": 1}, {"from": "jjk", "to": "gqg", "width": 1}, {"from": "qhg", "to": "x02", "width": 1}, {"from": "qhg", "to": "y02", "width": 1}, {"from": "kbb", "to": "z45", "width": 1}, {"from": "gpb", "to": "prp", "width": 1}, {"from": "gpb", "to": "y31", "width": 1}, {"from": "gpb", "to": "x31", "width": 1}, {"from": "gpb", "to": "z31", "width": 1}, {"from": "cwn", "to": "prp", "width": 1}, {"from": "cwn", "to": "z31", "width": 1}, {"from": "y42", "to": "vcd", "width": 1}, {"from": "x42", "to": "vcd", "width": 1}, {"from": "gqg", "to": "khw", "width": 1}, {"from": "gqg", "to": "z44", "width": 1}, {"from": "gqg", "to": "cst", "width": 1}, {"from": "khw", "to": "z45", "width": 1}, {"from": "y03", "to": "rrr", "width": 1}, {"from": "x03", "to": "rrr", "width": 1}, {"from": "x25", "to": "dwk", "width": 1}, {"from": "x25", "to": "cbg", "width": 1}, {"from": "y25", "to": "dwk", "width": 1}, {"from": "y25", "to": "cbg", "width": 1}, {"from": "dwk", "to": "srg", "width": 1}, {"from": "dwk", "to": "z25", "width": 1}, {"from": "phm", "to": "bcm", "width": 1}, {"from": "phm", "to": "z40", "width": 1}, {"from": "phm", "to": "wtf", "width": 1}, {"from": "bjw", "to": "bcm", "width": 1}, {"from": "bjw", "to": "z40", "width": 1}, {"from": "bcm", "to": "fcd", "width": 1}, {"from": "y31", "to": "dmf", "width": 1}, {"from": "x31", "to": "dmf", "width": 1}, {"from": "y28", "to": "pcd", "width": 1}, {"from": "y28", "to": "phk", "width": 1}, {"from": "x28", "to": "pcd", "width": 1}, {"from": "x28", "to": "phk", "width": 1}, {"from": "pcd", "to": "hbb", "width": 1}, {"from": "ffw", "to": "z11", "width": 1}, {"from": "ffw", "to": "gqr", "width": 1}, {"from": "ffw", "to": "y11", "width": 1}, {"from": "ffw", "to": "x11", "width": 1}, {"from": "cjf", "to": "z11", "width": 1}, {"from": "cjf", "to": "vfs", "width": 1}, {"from": "cjf", "to": "jgd", "width": 1}, {"from": "cjf", "to": "gqr", "width": 1}, {"from": "y21", "to": "mvp", "width": 1}, {"from": "x21", "to": "mvp", "width": 1}, {"from": "fcd", "to": "z41", "width": 1}, {"from": "fcd", "to": "fjq", "width": 1}, {"from": "nkw", "to": "z41", "width": 1}, {"from": "nkw", "to": "x41", "width": 1}, {"from": "nkw", "to": "y41", "width": 1}, {"from": "nkw", "to": "fjq", "width": 1}, {"from": "kqs", "to": "z22", "width": 1}, {"from": "kqs", "to": "mvp", "width": 1}, {"from": "kqs", "to": "wms", "width": 1}, {"from": "vjk", "to": "z22", "width": 1}, {"from": "vjk", "to": "x22", "width": 1}, {"from": "vjk", "to": "y22", "width": 1}, {"from": "x36", "to": "ggk", "width": 1}, {"from": "x36", "to": "rhv", "width": 1}, {"from": "y36", "to": "ggk", "width": 1}, {"from": "y36", "to": "rhv", "width": 1}, {"from": "ggk", "to": "z36", "width": 1}, {"from": "ggk", "to": "bqf", "width": 1}, {"from": "x34", "to": "cjq", "width": 1}, {"from": "y34", "to": "cjq", "width": 1}, {"from": "x24", "to": "rwd", "width": 1}, {"from": "y24", "to": "rwd", "width": 1}, {"from": "rfs", "to": "fkk", "width": 1}, {"from": "rfs", "to": "z35", "width": 1}, {"from": "rfs", "to": "cjq", "width": 1}, {"from": "fkk", "to": "hpg", "width": 1}, {"from": "rwd", "to": "fbs", "width": 1}, {"from": "y11", "to": "mdb", "width": 1}, {"from": "x11", "to": "mdb", "width": 1}, {"from": "nrv", "to": "z29", "width": 1}, {"from": "nrv", "to": "kwp", "width": 1}, {"from": "qdc", "to": "y32", "width": 1}, {"from": "qdc", "to": "x32", "width": 1}, {"from": "x08", "to": "bnr", "width": 1}, {"from": "x08", "to": "wcg", "width": 1}, {"from": "y08", "to": "bnr", "width": 1}, {"from": "y08", "to": "wcg", "width": 1}, {"from": "bnr", "to": "pss", "width": 1}, {"from": "sfw", "to": "tsh", "width": 1}, {"from": "sfw", "to": "z13", "width": 1}, {"from": "sfw", "to": "npc", "width": 1}, {"from": "mfc", "to": "bwd", "width": 1}, {"from": "mfc", "to": "y37", "width": 1}, {"from": "mfc", "to": "x37", "width": 1}, {"from": "mfc", "to": "z37", "width": 1}, {"from": "gqf", "to": "bwd", "width": 1}, {"from": "gqf", "to": "z37", "width": 1}, {"from": "gqf", "to": "bqf", "width": 1}, {"from": "gqf", "to": "rhv", "width": 1}, {"from": "nbb", "to": "hpg", "width": 1}, {"from": "x09", "to": "csk", "width": 1}, {"from": "y09", "to": "csk", "width": 1}, {"from": "csk", "to": "z09", "width": 1}, {"from": "qfj", "to": "z20", "width": 1}, {"from": "mqg", "to": "z20", "width": 1}, {"from": "wcg", "to": "rms", "width": 1}, {"from": "wcg", "to": "z08", "width": 1}, {"from": "y37", "to": "rnr", "width": 1}, {"from": "x37", "to": "rnr", "width": 1}, {"from": "wrn", "to": "z18", "width": 1}, {"from": "wrn", "to": "gfq", "width": 1}, {"from": "wrn", "to": "y18", "width": 1}, {"from": "wrn", "to": "x18", "width": 1}, {"from": "rvw", "to": "dnb", "width": 1}, {"from": "dnb", "to": "bcn", "width": 1}, {"from": "dnb", "to": "z27", "width": 1}, {"from": "wwc", "to": "x01", "width": 1}, {"from": "wwc", "to": "y01", "width": 1}, {"from": "hch", "to": "wsg", "width": 1}, {"from": "hch", "to": "pnw", "width": 1}, {"from": "kpk", "to": "z10", "width": 1}, {"from": "kpk", "to": "x10", "width": 1}, {"from": "kpk", "to": "y10", "width": 1}, {"from": "kpk", "to": "jgd", "width": 1}, {"from": "srg", "to": "fbs", "width": 1}, {"from": "y00", "to": "wsg", "width": 1}, {"from": "y00", "to": "z00", "width": 1}, {"from": "x00", "to": "wsg", "width": 1}, {"from": "x00", "to": "z00", "width": 1}, {"from": "wsg", "to": "z01", "width": 1}, {"from": "x33", "to": "mqv", "width": 1}, {"from": "y33", "to": "mqv", "width": 1}, {"from": "qcn", "to": "y41", "width": 1}, {"from": "qcn", "to": "x41", "width": 1}, {"from": "bgf", "to": "qfg", "width": 1}, {"from": "sfb", "to": "y06", "width": 1}, {"from": "sfb", "to": "x06", "width": 1}, {"from": "bsv", "to": "bcn", "width": 1}, {"from": "bsv", "to": "z27", "width": 1}, {"from": "bcn", "to": "rkf", "width": 1}, {"from": "phk", "to": "z28", "width": 1}, {"from": "phk", "to": "wff", "width": 1}, {"from": "tds", "to": "x16", "width": 1}, {"from": "tds", "to": "y16", "width": 1}, {"from": "tds", "to": "z16", "width": 1}, {"from": "pss", "to": "z09", "width": 1}, {"from": "pss", "to": "rms", "width": 1}, {"from": "kwp", "to": "hbb", "width": 1}, {"from": "hbb", "to": "z29", "width": 1}, {"from": "hbb", "to": "wff", "width": 1}, {"from": "dsn", "to": "rms", "width": 1}, {"from": "dsn", "to": "ktn", "width": 1}, {"from": "dsn", "to": "z08", "width": 1}, {"from": "x18", "to": "twv", "width": 1}, {"from": "y18", "to": "twv", "width": 1}, {"from": "fbs", "to": "z25", "width": 1}, {"from": "hpg", "to": "z36", "width": 1}, {"from": "hpg", "to": "bqf", "width": 1}, {"from": "wff", "to": "rkf", "width": 1}, {"from": "qfg", "to": "x06", "width": 1}, {"from": "qfg", "to": "y06", "width": 1}, {"from": "qfg", "to": "z06", "width": 1}, {"from": "rkf", "to": "z28", "width": 1}, {"from": "pnw", "to": "y01", "width": 1}, {"from": "pnw", "to": "x01", "width": 1}, {"from": "pnw", "to": "z01", "width": 1}, {"from": "x10", "to": "vfs", "width": 1}, {"from": "y10", "to": "vfs", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": true,
+        "filter": [
+            "physics"
+        ]
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+                  // if this network requires displaying the configure window,
+                  // put it in its div
+                  options.configure["container"] = document.getElementById("config");
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+                    network.on("selectNode", neighbourhoodHighlight);
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
