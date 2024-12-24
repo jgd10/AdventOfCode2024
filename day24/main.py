@@ -137,43 +137,19 @@ def part2(input_type: InputType):
 
                 graph.add_node(n, color=color)
                 nodes.add(n)
-        #edge1 = (op.variables[0], op.result)
-        ##edge2 = (op.variables[1], op.result)
-        #if op.result == 'z05':
-        #    res = 'hdc'
-        #elif op.result == 'hdc':
-        #    res = 'z05'
-        #elif op.result == 'z20':
-        #    res = 'fvm'
-        #elif op.result == 'fvm':
-        #    res = 'z20'
-        #elif op.result == 'mvv':
-        #    res = 'hhh'
-        #elif op.result == 'hhh':
-        #    res = 'mvv'
-        #else:
         res = op.result
         graph.add_edge(op.variables[0], res)
         graph.add_edge(op.variables[1], res)
-        #edges.extend([edge1, edge2])
-    #graph = nx.from_edgelist(edges)
     nt = PVNetwork('1000px', '2000px',
                    select_menu = True,
                    filter_menu = True)
     nt.show_buttons(filter_=["physics"])
     nt.from_nx(graph)
     nt.show('nx.html', notebook=False)
-    #plt.show()
-
-    # intended_result = x_num + y_num
-    # actual_result = 0
-    # while actual_result != intended_result:
-    #     vals_ = vals.copy()
-    #     ops_ = ops[:]
-    #     for op in ops_:
-    #         op.perform(vals_, ops_)
-    #     z_vals = {var: v for var, v in vals.items() if 'z' in var}
-    #     print(f'Part 1: {values_to_int(z_vals)}')
+    # I solved this visually in the end using pyvis and networkx
+    # it was a huge pain and would probably have been quicker to just learn
+    # the theory, but alas, and now it is done! I'll hopefully come back and
+    # code it up another time
 
 if __name__ == '__main__':
     part1(InputType.INPUT)
