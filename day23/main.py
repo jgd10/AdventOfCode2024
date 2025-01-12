@@ -22,7 +22,7 @@ def parse(input_type: InputType):
     return network, starts_with_t
 
 
-def find_triangles(network, key):
+def find_triangle(network, key):
     connections = network[key]
     loops = set()
     for connection in connections:
@@ -36,7 +36,7 @@ def find_triangles(network, key):
 @timer(TimeUnit.ms)
 def part1(input_type: InputType):
     netwk, tpooters = parse(input_type)
-    loops1 = [find_triangles(netwk, k) for k in netwk]
+    loops1 = [find_triangle(netwk, k) for k in netwk]
     loops = {tuple(sorted(loop)) for row in loops1 for loop in row}
     loops = {loop for loop in loops if set(loop).intersection(tpooters)}
     print(f'Part 1: {len(loops)}')
